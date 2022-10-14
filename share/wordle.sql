@@ -1,15 +1,13 @@
--- $ sqlite3 ./var/wordle.db < ./share/wordle.sql
+-- Database People please
 -- Create the database here
+-- When finish creating database run the command below at the root folder
+-- $ sqlite3 ./var/wordle.db < ./share/wordle.sql
 
 PRAGMA foreign_keys=ON;
 BEGIN TRANSACTION;
 
--- DROP TABLE IF EXISTS games;
--- CREATE TABLE games (
-
--- )
-
-
+-- Example table modify to meet the project requirements
+--  *******************CREATE YOUR SCHEMA HERE *******************
 DROP TABLE IF EXISTS users;
 CREATE TABLE users (
     id INTEGER primary key,

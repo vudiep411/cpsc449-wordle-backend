@@ -54,7 +54,8 @@ def conflict(e):
 # **********************************************************
 # ------------------- YOUR CODE HERE -----------------------
 # ***********************************************************
-# API code here
+# API code here for Python people
+
 
 @app.route("/", methods=["GET"])
 def wordle():
@@ -83,6 +84,7 @@ async def get_one_user(id):
 async def register(data):
     db = await _get_db()
     user = dataclasses.asdict(data)
+    # hash this before adding to db user['password']
     try:
         id = await db.execute(
             """
