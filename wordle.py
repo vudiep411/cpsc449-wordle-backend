@@ -59,7 +59,9 @@ def conflict(e):
 
 @app.route("/", methods=["GET"])
 def wordle():
-    return "welcome to wordle api"
+    return textwrap.dedent( """<h1>Welcome to wordle api project 1</h1>
+                <p>Vu Diep</p>
+    """)
 
 # Get all users example
 @app.route("/user", methods=["GET"])
