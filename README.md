@@ -19,7 +19,7 @@ git clone https://github.com/vudiep411/cpsc449-wordle-backend.git
 
 ```sh
 cd cpsc449-wordle-backend/
-sqlite3 ./var/wordle.db < ./share/wordle.sql
+./init.sh
 ```
 <p>4. Start the server with foreman</p>
 
