@@ -2,20 +2,20 @@
 <p><b>Group Member:</b> Vu Diep, Jiu Lin, Shridhar Bhardwaj, Heet Savla<p/>
 
 ## Installations
-<p>1. Install libraries needed</p>
-
-```sh
-./requirements.sh
-```
-<p>2. Clone the repository</p>
+<p>1. Clone the repository</p>
 
 ```sh
 git clone https://github.com/vudiep411/cpsc449-wordle-backend.git
 ```
-<p>3. cd into the root directory</p>
+<p>2. cd into the root directory</p>
 
 ```sh
 cd cpsc449-wordle-backend/
+```
+<p>3. Install libraries needed</p>
+
+```sh
+./requirements.sh
 ```
 <p>4. Setting up the database</p>
 
