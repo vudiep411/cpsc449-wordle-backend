@@ -12,13 +12,17 @@
 ```sh
 git clone https://github.com/vudiep411/cpsc449-wordle-backend.git
 ```
-<p>3. Setting up the database</p>
+<p>3. cd into the root directory</p>
 
 ```sh
 cd cpsc449-wordle-backend/
+```
+<p>4. Setting up the database</p>
+
+```sh
 ./init.sh
 ```
-<p>4. Start the server with foreman</p>
+<p>5. Start the server with foreman</p>
 
 ```sh
 foreman start
