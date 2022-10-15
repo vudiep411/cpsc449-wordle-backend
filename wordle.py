@@ -1,4 +1,3 @@
-import collections
 import dataclasses
 import sqlite3
 import textwrap
@@ -19,6 +18,11 @@ app.config.from_file(f"./etc/{__name__}.toml", toml.load)
 class User:
     username: str
     password: str
+
+@dataclasses.dataclass
+class GuessWord:
+    user_id: int
+    guess_word: str
 
 async def _connect_db():
     database = databases.Database(app.config["DATABASES"]["URL"])
@@ -81,7 +85,7 @@ async def get_one_user(id):
         abort(404)
 
 # Add user example
-@app.route("/user", methods=["POST"])
+@app.route("/user/register", methods=["POST"])
 @validate_request(User)
 async def register(data):
     db = await _get_db()
@@ -102,3 +106,29 @@ async def register(data):
     return user, 201, {"Location": f"/user/{id}"}
 
 
+@app.route("/user/guessword/<int:id>", methods=["GET"])
+async def get_guessword(id):
+    db = await _get_db()
+    guess_word = await db.fetch_all('SELECT guess_word from userInput WHERE user_id=:id;', values={"id": id})
+    return list(map(dict, guess_word))
+
+
+# @app.route("/user/guessword/<int:id>", methods=["POST"])
+# @validate_request(GuessWord)
+# async def post_guessword(data):
+#     db = await _get_db()
+#     user = dataclasses.asdict(data)
+#     # hash this before adding to db user['password']
+#     try:
+#         id = await db.execute(
+#             """
+#             INSERT INTO users(username, password)
+#             VALUES(:username, :password)
+#             """,
+#             user,
+#         )
+#     except sqlite3.IntegrityError as e:
+#         abort(409, e)
+
+#     user["id"] = id
+#     return user, 201, {"Location": f"/user/{id}"}
