@@ -113,7 +113,7 @@ async def get_guessword(id):
     guess_word = await db.fetch_all('SELECT guess_word from userInput WHERE user_id=:id;', values={"id": id})
     return list(map(dict, guess_word))
 
-# shree
+# shree lis
 # @app.route("/user/guessword/<int:id>", methods=["POST"])
 # @validate_request(GuessWord)
 # async def post_guessword(data):
