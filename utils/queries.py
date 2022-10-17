@@ -3,7 +3,10 @@ from random import randint
 from quart import abort
 
 
-    
+# Add a new game for a user
+# @Param 
+# user_id -> user_id
+# db -> database object
 async def add_new_game(user_id, db):
     f = open('correct.json')
     correctData = json.load(f)
@@ -19,6 +22,11 @@ async def add_new_game(user_id, db):
     return game_id
 
 
+# Fetch the secret correct word from a specific game session
+# @Param
+# user_id -> user_id
+# id -> game_id
+# db -> database object
 async def get_correct_word_user(user_id, id, db):
     correct_word = await db.fetch_one(
         'SELECT correct_word from game WHERE user_id=:user_id AND id=:id',
@@ -26,6 +34,9 @@ async def get_correct_word_user(user_id, id, db):
     return correct_word[0]    
 
 
+# Return single user for testing purpose 
+# id -> user_id
+# db -> database oject
 async def get_one_user(id, db):
     user = await db.fetch_one("SELECT * FROM users WHERE id = :id", values={"id": id})
     if user:
@@ -34,6 +45,10 @@ async def get_one_user(id, db):
         abort(404)
 
 
+# Add a user guessed word into the database
+# user_id -> user_id
+# guess_word -> user guessed word
+# db -> database oject
 async def add_guessed_word(user_id, guess_word, db):
     await db.execute(
         """
@@ -43,6 +58,10 @@ async def add_guessed_word(user_id, guess_word, db):
         values={"user_id": user_id, "guess_word": guess_word}
     )
 
+
+# Set the game status win to True
+# id -> game_id
+# user_id -> user_id
 async def set_win_user(id, user_id, db):
     await db.execute(
     """
@@ -50,6 +69,7 @@ async def set_win_user(id, user_id, db):
     """, 
     values={"win": True, "id": id, "user_id": user_id})  
 
+# increment user's guess by one
 async def increment_guesses(id, user_id, db):
     await db.execute(
         "UPDATE game SET num_of_guesses=num_of_guesses + 1 WHERE id=:id AND user_id=:user_id ",

@@ -101,6 +101,7 @@ async def get_users():
     all_users = await db.fetch_all('SELECT username from users;')
     return list(map(dict, all_users))
 
+
 # Get single user
 @app.route("/user/<int:id>", methods=["GET"])
 async def get_user(id):
@@ -115,8 +116,7 @@ async def register(data):
     db = await _get_db()
     user = dataclasses.asdict(data)
 
-    # hash password wiht bcrypt
-    password = user['password']
+    password = user['password']    # hash password wiht bcrypt
     salt = bcrypt.gensalt()
     hashed = bcrypt.hashpw(password.encode('UTF-8'), salt).decode('UTF-8')
 
@@ -136,6 +136,7 @@ async def register(data):
 
     return {"authenticated": True, "username": user["username"]}, 201, {"Location": f"/user/{user_id}"}
 
+
 # Login Route
 @app.route("/user/login", methods=["POST"])
 @validate_request(User)
@@ -149,8 +150,8 @@ async def login(data):
     user = await db.fetch_one("SELECT * from users WHERE username=:username",
     values={"username": username}
     )
-    # Check bcrypt hash
-    if user:
+   
+    if user:    # Check bcrypt hash
         actualPassword = user[2]
         print(actualPassword)
         if bcrypt.checkpw(password.encode('UTF-8'), actualPassword.encode('UTF-8')):
@@ -158,6 +159,8 @@ async def login(data):
 
     return {"authenticated" : authenticated}
 
+
+# Get guess word
 @app.route("/user/guessword/<int:id>", methods=["GET"])
 async def get_guessword(id):
     db = await _get_db()
@@ -175,6 +178,14 @@ async def post_guessword(data):
     user_id = guessed["user_id"]
     guess_word = guessed["guess_word"]
 
+    guesses = await get_game_guesses(id=id, user_id=user_id, db=db)
+    won = await db.fetch_one('SELECT win FROM game WHERE user_id=:user_id AND id=:id',
+        values={"user_id": user_id, "id": id}
+    )
+
+    if guesses[0] >= 6 or won[0]:
+        return {"numberOfGuesses": guesses[0], "win": won[0]}
+
     correct_word = await get_correct_word_user(id=id, user_id=user_id ,db=db)
 
     isValid = False
@@ -184,15 +195,21 @@ async def post_guessword(data):
             await add_guessed_word(user_id=user_id, guess_word=guess_word, db=db)
             if guess_word == correct_word:
                 await set_win_user(id=id, user_id=user_id, db=db)
+                letter_map = {
+                    'correctPosition' : [correct_word],
+                    'correctLetterWrongPos': [],
+                    'wrongLetter' : []
+                }
                 isCorrectWord=True
             else:
                 letter_map = check_pos_valid_letter(guess_word=guess_word, correct_word=correct_word)
                 await increment_guesses(id=id, user_id=user_id, db=db)
             isValid = True
+        else:
+            return {"error": "Invalid word"}
 
     except sqlite3.IntegrityError as e:
         abort(409, e)
-    guesses = await get_game_guesses(id=id, user_id=user_id, db=db)
     responseData = {
         "guessesRemain": 6 - guesses[0],
         "isValid": isValid,
@@ -216,7 +233,7 @@ async def start_new_game(data):
 @app.route("/game/<int:id>", methods=["GET"])
 async def get_game(id):
     db = await _get_db()
-    game = await db.fetch_one("SELECT id, num_of_guesses, user_id, win FROM game WHERE id = :id", values={"id": id})
+    game = await db.fetch_one("SELECT * FROM game WHERE id = :id", values={"id": id})
     if game:
         return dict(game)
     else:
