@@ -16,10 +16,13 @@ CREATE TABLE users (
     UNIQUE(username)
 );
 
-DROP TABLE IF EXISTS guess_result;
-CREATE TABLE guess_result(
+DROP TABLE IF EXISTS game;
+CREATE TABLE game(
     id INTEGER primary key,
-    correct_word VARCHAR    
+    user_id INT references user(id),
+    correct_word VARCHAR,
+    win BOOLEAN,
+    num_of_guesses INT      
 );
 
 DROP TABLE IF EXISTS userInput;
@@ -29,9 +32,5 @@ CREATE TABLE userInput(
     guess_word VARCHAR
 );
 
-INSERT INTO users(username, password) VALUES('vudiep411', 'vudiep411');
-INSERT INTO users(username, password) VALUES('JiuLin', '123456');
-INSERT INTO userInput(user_id, guess_word) VALUES(1, 'WITCH');
-INSERT INTO userInput(user_id, guess_word) VALUES(2, 'BITCH');
-INSERT INTO userInput(user_id, guess_word) VALUES(2, 'HELLO');
+
 COMMIT;
