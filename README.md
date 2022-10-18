@@ -35,3 +35,6 @@ foreman start
 
 <p><b>Python people:</b> Write your api in <b>wordle.py</b> file</p>
 <img alt="python" src="https://firebasestorage.googleapis.com/v0/b/chatapp-be9bd.appspot.com/o/pythonpeople.png?alt=media&token=e27a58cb-ecd2-45a5-8384-e58e654cd6cd"/>
+
+## Documentation
+
