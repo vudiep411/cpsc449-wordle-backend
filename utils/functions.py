@@ -1,3 +1,20 @@
+#   Author information
+#   name: Vu Diep    
+#   email: vdiep8@csu.fullerton.edu
+#
+#   This file
+#   File name: queries.py
+#   Purpose: functions needed for wordle.py
+
+
+# Check the valid guessed word letter and valid postion
+# guess_word -> str, user's guess_word
+# correct_word -> str, correct secret word from database
+# return dict -> {
+#   correctPosition -> Array of correct letters in the correct spot
+#   correctLetterWrongPos -> Array of correct letters in the wrong spot
+#   wrongLetter -> Array of wrong letters
+# }
 def check_pos_valid_letter(guess_word, correct_word):
     correct_pos = []
     correct_letter_wrong_pos = []

@@ -7,7 +7,7 @@ import json
 import bcrypt
 from quart import Quart, g, abort
 from quart_schema import QuartSchema, RequestSchemaValidationError, validate_request
-from utils.queries import add_new_game, get_one_user, get_correct_word_user, add_guessed_word, set_win_user, increment_guesses, get_game_guesses, get_win, add_user
+from utils.queries import *
 from utils.functions import check_pos_valid_letter
 
 
@@ -106,6 +106,7 @@ async def get_user(id):
 # *************************************************************************   
 
 # Register User Route
+# Param
 # data -> JSON {
 #   "username": str
 #   "password": str
@@ -133,6 +134,7 @@ async def register(data):
 
 
 # Login Route
+# Param:
 # data -> JSON {
 #   "username": str
 #   "password": str
@@ -146,11 +148,8 @@ async def login(data):
     username = userInput['username']
     password = userInput['password']
 
-    user = await db.fetch_one("SELECT * from users WHERE username=:username",
-    values={"username": username}
-    )
+    user = await get_user_by_username(username=username, db=db)
     
-# Check bcrypt hash
     if user:        
         actualPassword = user[2]
         if bcrypt.checkpw(password.encode('UTF-8'), actualPassword.encode('UTF-8')):
@@ -160,24 +159,38 @@ async def login(data):
 
 
 
-# Get guess word
+# Get user guess words
+# <int:id> -> user id
+# return list of guess words from user across all games
 @app.route("/user/guessword/<int:id>", methods=["GET"])
-async def get_guessword(id):
+async def get_user_guessword(id):
     db = await _get_db()
     guess_word = await db.fetch_all('SELECT * from userInput WHERE user_id=:id;', values={"id": id})
     return list(map(dict, guess_word))
 
 
 
+# Get game guess words
+# <int:id> -> game id
+# return list of guess words from a specific game id
+@app.route("/game/guessword/<int:id>", methods=["GET"])
+async def get_game_guessword(id):
+    db = await _get_db()
+    guess_word = await db.fetch_all('SELECT * from userInput WHERE game_id=:id;', values={"id": id})
+    return list(map(dict, guess_word))
+
+
+
 # Add a guess word from user to database
+# Param: 
 # data -> JSON {
-#   "id": <int:id>
-#   "user_id": <int:id>
+#   "id": int
+#   "user_id": int
 #   "guess_word": str
 # }
 @app.route("/user/guessword", methods=["POST"])
 @validate_request(GuessWord)
-async def post_guessword(data):
+async def post_user_guessword(data):
     db = await _get_db()
     user_guessed = dataclasses.asdict(data)  # Data from POST req
 
@@ -185,8 +198,8 @@ async def post_guessword(data):
     user_id = user_guessed["user_id"]
     guess_word = user_guessed["guess_word"]
 
-    num_of_guesses = await get_game_guesses(id=id, user_id=user_id, db=db)
-    won = await get_win(id=id, user_id=user_id, db=db) 
+    num_of_guesses = await get_game_num_guesses(id=id, user_id=user_id, db=db)
+    won = await get_win_query(id=id, user_id=user_id, db=db) 
 
     # User and game doesn't exist
     if not num_of_guesses or not won: 
@@ -196,13 +209,13 @@ async def post_guessword(data):
     if num_of_guesses[0] >= 6 or won[0]:   
         return {"numberOfGuesses": num_of_guesses[0], "win": won[0]}
 
-    correct_word = await get_correct_word_user(id=id, user_id=user_id ,db=db)
+    correct_word = await get_game_correct_word(id=id, user_id=user_id ,db=db)
     isValid = False
     isCorrectWord = False
 
     try:
         if guess_word in VALID_DATA:     
-            await add_guessed_word(id=id, user_id=user_id, guess_word=guess_word, db=db)
+            await add_user_guessed_word(id=id, user_id=user_id, guess_word=guess_word, db=db)
             if guess_word == correct_word:
                 await set_win_user(id=id, user_id=user_id, db=db)
                 letter_map = {
@@ -232,10 +245,10 @@ async def post_guessword(data):
 
 
 # Start a Game
-# data -> JSON {"user_id": <int:id>}
+# Param: data -> JSON {"user_id": int}
 @app.route("/user/startNewGame", methods=["POST"])
 @validate_request(UserId)
-async def start_new_game(data):
+async def start_user_new_game(data):
     db = await _get_db()
     user_id = dataclasses.asdict(data)
     game_id = await add_new_game(user_id=user_id["user_id"], db=db)
@@ -244,10 +257,15 @@ async def start_new_game(data):
 
 
 
-# Get a user's game 
+# Get a game by id
 # <int:id> -> game id
+# return -> JSON {
+#   id: int
+#   user_id: int
+#   game_id: int
+# }
 @app.route("/game/<int:id>", methods=["GET"])
-async def get_game(id):
+async def get_game_by_id(id):
     db = await _get_db()
     game = await db.fetch_one("SELECT * FROM game WHERE id = :id", values={"id": id})
     if game:
@@ -257,8 +275,14 @@ async def get_game(id):
 
 
 
-# Get all active game from users
+# Get all games from users
 # <int:id> -> user id
+# return -> Array [{
+#   id: int
+#   num_of_guesses: int
+#   user_id: int
+#   win: bool   
+# },...]
 @app.route("/user/game/<int:id>", methods=["GET"])
 async def get_all_games_user(id):
     db = await _get_db()
