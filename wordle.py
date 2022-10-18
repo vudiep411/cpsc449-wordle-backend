@@ -149,8 +149,9 @@ async def login(data):
     user = await db.fetch_one("SELECT * from users WHERE username=:username",
     values={"username": username}
     )
-   
-    if user:    # Check bcrypt hash
+    
+# Check bcrypt hash
+    if user:        
         actualPassword = user[2]
         if bcrypt.checkpw(password.encode('UTF-8'), actualPassword.encode('UTF-8')):
             authenticated=True
