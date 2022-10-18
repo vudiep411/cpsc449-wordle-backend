@@ -49,13 +49,13 @@ async def get_one_user(id, db):
 # user_id -> user_id
 # guess_word -> user guessed word
 # db -> database oject
-async def add_guessed_word(user_id, guess_word, db):
+async def add_guessed_word(id, user_id, guess_word, db):
     await db.execute(
         """
-        INSERT INTO userInput(user_id, guess_word)
-        VALUES(:user_id, :guess_word)
+        INSERT INTO userInput(user_id, guess_word, game_id)
+        VALUES(:user_id, :guess_word, :game_id)
         """,
-        values={"user_id": user_id, "guess_word": guess_word}
+        values={"user_id": user_id, "guess_word": guess_word, "game_id": id}
     )
 
 

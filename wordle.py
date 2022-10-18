@@ -164,7 +164,7 @@ async def login(data):
 @app.route("/user/guessword/<int:id>", methods=["GET"])
 async def get_guessword(id):
     db = await _get_db()
-    guess_word = await db.fetch_all('SELECT guess_word from userInput WHERE user_id=:id;', values={"id": id})
+    guess_word = await db.fetch_all('SELECT * from userInput WHERE user_id=:id;', values={"id": id})
     return list(map(dict, guess_word))
 
 
@@ -202,7 +202,7 @@ async def post_guessword(data):
 
     try:
         if guess_word in VALID_DATA:     
-            await add_guessed_word(user_id=user_id, guess_word=guess_word, db=db)
+            await add_guessed_word(id=id, user_id=user_id, guess_word=guess_word, db=db)
             if guess_word == correct_word:
                 await set_win_user(id=id, user_id=user_id, db=db)
                 letter_map = {

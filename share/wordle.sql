@@ -29,6 +29,7 @@ DROP TABLE IF EXISTS userInput;
 CREATE TABLE userInput(
     id INTEGER primary key,
     user_id INT references users(id),
+    game_id INT references game(id),
     guess_word VARCHAR
 );
 
