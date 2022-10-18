@@ -76,9 +76,32 @@ async def increment_guesses(id, user_id, db):
         values={"id": id, "user_id" : user_id}
         )
 
+# Fetch number of guesses from a game
 async def get_game_guesses(id, user_id, db):
     guesses = await db.fetch_one(
         "SELECT num_of_guesses FROM game WHERE id=:id AND user_id=:user_id",
         values={"id": id, "user_id": user_id}
     )
     return guesses    
+
+# Get win or lose for a specific game session in db
+async def get_win(id, user_id, db):
+    won = await db.fetch_one(
+        'SELECT win FROM game WHERE user_id=:user_id AND id=:id',
+        values={"user_id": user_id, "id": id}
+    )
+    return won
+
+# Register a user in database
+async def add_user(username, password, db):
+    user_id = await db.execute(
+        """
+        INSERT INTO users(username, password)
+        VALUES(:username, :password)
+        """,
+        values={
+            "username": username, 
+            "password": password
+        },
+        )
+    return user_id
