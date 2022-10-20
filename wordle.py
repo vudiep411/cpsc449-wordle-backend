@@ -29,7 +29,7 @@ class User:
 @dataclasses.dataclass
 class GuessWord:
     user_id: int
-    id: int
+    game_id: int
     guess_word: str
 
 @dataclasses.dataclass
@@ -210,12 +210,18 @@ async def post_user_guessword(data):
     db = await _get_db()
     user_guessed = dataclasses.asdict(data)  # Data from POST req
 
-    id = user_guessed["id"]
+    game_id = user_guessed["game_id"]
     user_id = user_guessed["user_id"]
     guess_word = user_guessed["guess_word"]
 
-    num_of_guesses = await get_game_num_guesses(id=id, user_id=user_id, db=db)
-    won = await get_win_query(id=id, user_id=user_id, db=db) 
+    current_game_guesswords_list = await get_guesswords_in_game(user_id=user_id, game_id=game_id, db=db)
+
+    # Check if user already guess the word before
+    if guess_word in current_game_guesswords_list:
+        return {"error": "Invalid word"}
+
+    num_of_guesses = await get_game_num_guesses(id=game_id, user_id=user_id, db=db)
+    won = await get_win_query(id=game_id, user_id=user_id, db=db) 
 
     # User and game doesn't exist
     if not num_of_guesses or not won: 
@@ -225,15 +231,15 @@ async def post_user_guessword(data):
     if num_of_guesses[0] >= 6 or won[0]:   
         return {"numberOfGuesses": num_of_guesses[0], "win": won[0]}
 
-    correct_word = await get_game_correct_word(id=id, user_id=user_id ,db=db)
+    correct_word = await get_game_correct_word(id=game_id, user_id=user_id ,db=db)
     isValid = False
     isCorrectWord = False
 
     try:
         if guess_word in VALID_DATA:     
-            await add_user_guessed_word(id=id, user_id=user_id, guess_word=guess_word, db=db)
+            await add_user_guessed_word(id=game_id, user_id=user_id, guess_word=guess_word, db=db)
             if guess_word == correct_word:
-                await set_win_user(id=id, user_id=user_id, db=db)
+                await set_win_user(id=game_id, user_id=user_id, db=db)
                 letter_map = {
                     'correctPosition' : [correct_word],
                     'correctLetterWrongPos': [],
@@ -242,7 +248,7 @@ async def post_user_guessword(data):
                 isCorrectWord=True
             else:
                 letter_map = check_pos_valid_letter(guess_word=guess_word, correct_word=correct_word)
-                await increment_guesses(id=id, user_id=user_id, db=db)
+                await increment_guesses(id=game_id, user_id=user_id, db=db)
             isValid = True
         else:
             return {"error": "Invalid word"}
@@ -251,7 +257,7 @@ async def post_user_guessword(data):
         abort(409, e)
 
     responseData = {
-        "guessesRemain": 6 - num_of_guesses[0] + 1,
+        "guessesRemain": 6 - num_of_guesses[0] - 1,
         "isValid": isValid,
         "correctWord": isCorrectWord,
         "letterPosData": letter_map
@@ -268,9 +274,12 @@ async def start_user_new_game(data):
     """Add a new game into database"""
     db = await _get_db()
     user_id = dataclasses.asdict(data)
-    game_id = await add_new_game(user_id=user_id["user_id"], db=db)
-
-    return {"game_id": game_id, "user_id": user_id["user_id"]}
+    user = await db.fetch_one('SELECT * FROM users WHERE id=:id', values={'id': user_id["user_id"]})
+    print(user)
+    if user:
+        game_id = await add_new_game(user_id=user_id["user_id"], db=db)
+        return {"game_id": game_id, "user_id": user_id["user_id"]}
+    return {"error": "User does not exist"}
 
 
 

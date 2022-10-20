@@ -142,3 +142,17 @@ async def get_user_by_username(username, db):
     values={"username": username}
     )
     return user
+
+# Get all guessword from a specific user from a specific game
+# game_id -> int, game's id
+# user_id -> int, user's id
+# db -> database object
+async def get_guesswords_in_game(game_id, user_id, db):
+    game_guess_words = await db.fetch_all(
+        'SELECT guess_word FROM userInput WHERE game_id=:game_id AND user_id=:user_id',
+        values={"game_id": game_id, "user_id": user_id}
+    )
+    if game_guess_words:
+        guessword_list = [item for t in game_guess_words for item in t]
+        return guessword_list 
+    return []
