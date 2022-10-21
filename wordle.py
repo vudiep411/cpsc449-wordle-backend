@@ -253,7 +253,7 @@ async def start_user_new_game(data):
     """Add a new game into database"""
     db = await _get_db()
     user_data = dataclasses.asdict(data)
-    user_id = user_id["user_id"]
+    user_id = user_data["user_id"]
     user = get_one_user(id=user_id, db=db)
     if user:
         game_id = await add_new_game(user_id=user_id, db=db)
