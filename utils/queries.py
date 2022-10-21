@@ -6,9 +6,6 @@
 #   File name: queries.py
 #   Purpose: Perform SQL queries
 
-
-
-import json
 from random import randint
 from quart import abort
 
@@ -19,8 +16,8 @@ from quart import abort
 # db -> database object
 # return game_id -> int, created game's id
 async def add_new_game(user_id, db):
-    f = open('correct.json')
-    correctData = json.load(f)
+    d = await db.fetch_all('SELECT word FROM correct')
+    correctData = [item for t in d for item in t]
     randomIndex = randint(0, len(correctData) - 1)
     CORRECT_WORD = correctData[randomIndex]  
     game_id = await db.execute(
@@ -29,7 +26,7 @@ async def add_new_game(user_id, db):
         VALUES(:user_id, :correct_word, :win, :num_of_guesses)
         """, 
         values={"user_id": user_id, "correct_word": CORRECT_WORD, "win": False, "num_of_guesses": 0})
-    f.close()
+
     return game_id
 
 
@@ -156,3 +153,13 @@ async def get_guesswords_in_game(game_id, user_id, db):
         guessword_list = [item for t in game_guess_words for item in t]
         return guessword_list 
     return []
+
+# Get a game by id
+async def get_game_by_id(game_id, user_id, db):
+    game = await db.fetch_one(
+        "SELECT * FROM game WHERE id = :id AND user_id=:user_id", 
+        values={"id": game_id, "user_id": user_id}
+    )
+    if game:
+        return dict(game)
+    return {}

@@ -28,7 +28,7 @@ def check_pos_valid_letter(guess_word, correct_word):
             wrong_letter.append(i)
         
     return {
-        'correctPosition' : correct_pos,
-        'correctLetterWrongPos': correct_letter_wrong_pos,
-        'wrongLetter' : wrong_letter
+        'correctPositionIdx' : correct_pos,
+        'correctLetterWrongPosIdx': correct_letter_wrong_pos,
+        'wrongLetterIdx' : wrong_letter
     }
