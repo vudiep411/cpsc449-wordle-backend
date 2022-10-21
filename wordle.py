@@ -194,7 +194,7 @@ async def post_user_guessword(data):
 
     # Check if user already guess the word before
     if guess_word in current_game_guesswords_list:
-        return {"error": "Invalid word"}
+        return {"error": "Cannot enter the same word twice"}
 
     # Proceed to check
     correct_word = await get_game_correct_word(id=game_id, user_id=user_id ,db=db)
@@ -309,3 +309,25 @@ async def get_user_game_in_progress(user_id, game_id):
     game_data["currentGuessWords"] = guess_word_list
     return game_data
 
+
+# Get all games in progress from users
+# <int:id> -> user id
+# return -> Array [{
+#   id: int
+#   num_of_guesses: int
+#   user_id: int
+#   win: bool   
+# }]
+
+@app.route("/user/allGamesInProgress/<int:user_id>", methods=["GET"])
+async def get_all_games_in_progress_user(user_id):
+    """Get all games from a user id
+        {id} = user's id
+    """
+    db = await _get_db()
+    user_game_active = await db.fetch_all(
+        """SELECT id, num_of_guesses, user_id, win from game 
+            WHERE user_id=:user_id AND win != true AND num_of_guesses < 6""",
+    values={"user_id": user_id}
+    )
+    return list(map(dict, user_game_active))
