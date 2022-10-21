@@ -154,8 +154,11 @@ async def login(data):
         actualPassword = user[2]
         if bcrypt.checkpw(password.encode('UTF-8'), actualPassword.encode('UTF-8')):
             authenticated=True
-
-    return {"authenticated" : authenticated}
+            
+    if authenticated:
+        return {"authenticated" : authenticated}
+    else:
+        abort(401)
 
 
 # Add a guess word from user to database

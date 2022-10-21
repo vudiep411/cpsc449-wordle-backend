@@ -8,7 +8,8 @@ BEGIN TRANSACTION;
 --  *******************CREATE YOUR SCHEMA HERE *******************
 DROP TABLE IF EXISTS users;
 CREATE TABLE users (
-    id INTEGER primary key,
+    id 
+     primary key,
     username VARCHAR,
     password VARCHAR,      
     UNIQUE(username)
