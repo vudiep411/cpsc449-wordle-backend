@@ -217,9 +217,9 @@ async def post_user_guessword(data):
             if guess_word == correct_word:
                 await set_win_user(id=game_id, user_id=user_id, db=db)
                 letter_map = {
-                    'correctPositionIdx' : list(range(6)),
-                    'correctLetterWrongPosIdx': [],
-                    'wrongLetterIdx' : []
+                    'correctPosition' : list(range(6)),
+                    'correctLetterWrongPos': [],
+                    'wrongLetter' : []
                 }
                 isCorrectWord=True
 

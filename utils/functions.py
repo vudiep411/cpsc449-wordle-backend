@@ -16,19 +16,30 @@
 #   wrongLetter -> Array of wrong letters
 # }
 def check_pos_valid_letter(guess_word, correct_word):
+    letter_freq = {}
+    for a in correct_word:
+        if a in letter_freq:
+            letter_freq[a] += 1
+        else:
+            letter_freq[a] = 1
+
     correct_pos = []
     correct_letter_wrong_pos = []
     wrong_letter = []
     for i in range(0, len(correct_word)):
         if guess_word[i] in correct_word and guess_word[i] == correct_word[i]:
             correct_pos.append(guess_word[i])
-        elif guess_word[i] in correct_word:
+            letter_freq[guess_word[i]] -= 1
+
+        elif guess_word[i] in correct_word and letter_freq[guess_word[i]] > 0:
             correct_letter_wrong_pos.append(guess_word[i])
+            letter_freq[guess_word[i]] -= 1
+            
         else:
             wrong_letter.append(guess_word[i])
         
     return {
-        'correctPositionIdx' : correct_pos,
-        'correctLetterWrongPosIdx': correct_letter_wrong_pos,
-        'wrongLetterIdx' : wrong_letter
+        'correctPosition' : correct_pos,
+        'correctLetterWrongPos': correct_letter_wrong_pos,
+        'wrongLetter' : wrong_letter
     }

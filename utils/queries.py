@@ -162,7 +162,7 @@ async def get_guesswords_in_game(game_id, user_id, db):
 # db -> database object
 async def get_game_by_id(game_id, user_id, db):
     game = await db.fetch_one(
-        "SELECT * FROM game WHERE id = :id AND user_id=:user_id", 
+        "SELECT id, user_id, win, num_of_guesses FROM game WHERE id = :id AND user_id=:user_id", 
         values={"id": game_id, "user_id": user_id}
     )
     if game:
