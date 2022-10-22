@@ -58,6 +58,7 @@ async def close_connection(exception):
     if db is not None:
         await db.disconnect()
 
+
 # Handle bad routes/errors
 @app.errorhandler(404)
 def not_found(e):
@@ -71,6 +72,9 @@ def bad_request(e):
 def conflict(e):
     return {"error": str(e)}, 409
 
+@app.errorhandler(401)
+def unauthorize(e):
+    return str(e), 401
 
 # API code here for Python people
 # ***************************** TEST ROUTES ********************************** 
@@ -99,8 +103,6 @@ async def get_game(id):
 
 
 # *************************************************************************   
-
-
 # Register User Route
 # Param
 # data -> JSON {
@@ -281,7 +283,10 @@ async def get_all_games_user(user_id):
             WHERE user_id=:user_id""",
     values={"user_id": user_id}
     )
-    return list(map(dict, user_game_active))
+    if user_game_active:
+        return list(map(dict, user_game_active))
+    else:
+        abort(404)
 
 
 # Get a specific game in progress from user id
