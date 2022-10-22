@@ -334,4 +334,7 @@ async def get_all_games_in_progress_user(user_id):
             WHERE user_id=:user_id AND win != true AND num_of_guesses < 6""",
     values={"user_id": user_id}
     )
-    return list(map(dict, user_game_active))
+    if user_game_active:
+        return list(map(dict, user_game_active))
+    else:
+        abort(404)
