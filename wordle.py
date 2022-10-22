@@ -64,7 +64,7 @@ async def close_connection(exception):
 def not_found(e):
     return {"error": "404 The resource could not be found"}, 404
 
-@app.errorhandler(RequestSchemaValidationError)
+@app.errorhandler(RequestSchemaValidationError) 
 def bad_request(e):
     return {"error": str(e.validation_error)}, 400
 
@@ -223,6 +223,7 @@ async def post_user_guessword(data):
                     'correctLetterWrongPos': [],
                     'wrongLetter' : []
                 }
+                await increment_guesses(id=game_id, user_id=user_id, db=db)
                 isCorrectWord=True
 
             else:
