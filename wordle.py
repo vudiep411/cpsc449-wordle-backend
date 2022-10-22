@@ -323,10 +323,9 @@ async def get_user_game_in_progress(user_id, game_id):
 #   user_id: int
 #   win: bool   
 # }]
-
 @app.route("/user/allGamesInProgress/<int:user_id>", methods=["GET"])
 async def get_all_games_in_progress_user(user_id):
-    """Get all games from a user id
+    """Get all games that are in progress from a user id
         {id} = user's id
     """
     db = await _get_db()
