@@ -87,6 +87,17 @@ def wordle():
                 <p>Vu Diep</p>
     """)
 
+
+# Display all users' information 
+
+@app.route("/user", methods=["GET"])
+async def get_users():
+    db = await _get_db()
+    all_users = await db.fetch_all('SELECT * from users;')
+    return list(map(dict, all_users))
+
+
+
 # Get a game by id show the correct word for testing
 @app.route("/game/<int:id>", methods=["GET"])
 async def get_game(id):
@@ -100,19 +111,6 @@ async def get_game(id):
         return dict(game)
     else:
         abort(404)
-
-
-# Display all users' information 
-
-@app.route("/user", methods=["GET"])
-async def get_user():
-    """Get all users' information"""
-    db = await _get_db()
-    user = await db.fetch_all(
-        "SELECT * FROM users"
-    )
-    return list(map(dict, user))
-
 
 
 
@@ -177,14 +175,108 @@ async def login(data):
         abort(401)
 
 
-# Add a guess word from user to database
+
+# Start a Game
+# Param: data -> JSON {"user_id": int}
+@app.route("/user/startNewGame", methods=["POST"])
+@validate_request(UserId)
+async def start_user_new_game(data):
+    """Add a new game into database"""
+    db = await _get_db()
+    user_data = dataclasses.asdict(data)
+    user_id = user_data["user_id"]
+    user = get_one_user(id=user_id, db=db)
+    if user:
+        game_id = await add_new_game(user_id=user_id, db=db)
+        return {"game_id": game_id, "user_id": user_id}
+    return abort(404)
+
+
+
+# Get all games from users
+# <int:id> -> user id
+# return -> Array [{
+#   id: int
+#   num_of_guesses: int
+#   user_id: int
+#   win: bool   
+# }]
+@app.route("/user/allGames/<int:user_id>", methods=["GET"])
+async def get_all_games_user(user_id):
+    """Get all games from a user id
+        {id} = user's id
+    """
+    db = await _get_db()
+    user_game_active = await db.fetch_all(
+        """SELECT id, num_of_guesses, user_id, win from game 
+            WHERE user_id=:user_id""",
+    values={"user_id": user_id}
+    )
+    if user_game_active:
+        return list(map(dict, user_game_active))
+    else:
+        abort(404)
+
+
+# Get a specific game in progress from user id
+# user_id: -> int, user's id
+# game_id: -> int, user's id
+@app.route("/user/game/<int:user_id>/<int:game_id>")
+async def get_user_game_in_progress(user_id, game_id):
+    """Get a game in progress"""
+    db = await _get_db()
+
+    guess_word_list = await get_guesswords_in_game(
+        game_id=game_id, 
+        user_id=user_id, 
+        db=db
+    )
+    game_data = await get_game_by_id(
+        game_id=game_id, 
+        user_id=user_id, 
+        db=db
+    )
+
+    if not game_data:
+        abort(404)
+
+    game_data["currentGuessWords"] = guess_word_list
+    return game_data
+
+
+# Get all games in progress from users,
+# <int:id> -> user id
+# return -> Array [{
+#   id: int
+#   num_of_guesses: int
+#   user_id: int
+#   win: bool   
+# }]
+@app.route("/user/allGamesInProgress/<int:user_id>", methods=["GET"])
+async def get_all_games_in_progress_user(user_id):
+    """Get all games that are in progress from a user id, won/lost games will not display
+        {id} = user's id
+    """
+    db = await _get_db()
+    user_game_active = await db.fetch_all(
+        """SELECT id, num_of_guesses, user_id, win from game 
+            WHERE user_id=:user_id AND win != true AND num_of_guesses < 6""",
+    values={"user_id": user_id}
+    )
+    if user_game_active:
+        return list(map(dict, user_game_active))
+    else:
+        abort(404)
+
+
+        # Add a guess word from user to database
 # Param: 
 # data -> JSON {
 #   "id": int
 #   "user_id": int
 #   "guess_word": str
 # }
-@app.route("/user/addGuess", methods=["POST"])
+@app.route("/user/playingGame", methods=["POST"])
 @validate_request(GuessWord)
 async def post_user_guessword(data):
     """Add a guessword into database"""
@@ -260,96 +352,3 @@ async def post_user_guessword(data):
         "letterPosData": letter_map
     }
     return responseData, 201    # Return Response
-
-
-# Start a Game
-# Param: data -> JSON {"user_id": int}
-@app.route("/user/startNewGame", methods=["POST"])
-@validate_request(UserId)
-async def start_user_new_game(data):
-    """Add a new game into database"""
-    db = await _get_db()
-    user_data = dataclasses.asdict(data)
-    user_id = user_data["user_id"]
-    user = get_one_user(id=user_id, db=db)
-    if user:
-        game_id = await add_new_game(user_id=user_id, db=db)
-        return {"game_id": game_id, "user_id": user_id}
-    return abort(404)
-
-
-
-# Get all games from users
-# <int:id> -> user id
-# return -> Array [{
-#   id: int
-#   num_of_guesses: int
-#   user_id: int
-#   win: bool   
-# }]
-@app.route("/user/allGames/<int:user_id>", methods=["GET"])
-async def get_all_games_user(user_id):
-    """Get all games from a user id
-        {id} = user's id
-    """
-    db = await _get_db()
-    user_game_active = await db.fetch_all(
-        """SELECT id, num_of_guesses, user_id, win from game 
-            WHERE user_id=:user_id""",
-    values={"user_id": user_id}
-    )
-    if user_game_active:
-        return list(map(dict, user_game_active))
-    else:
-        abort(404)
-
-
-# Get a specific game in progress from user id
-# user_id: -> int, user's id
-# game_id: -> int, user's id
-@app.route("/user/game/<int:user_id>/<int:game_id>")
-async def get_user_game_in_progress(user_id, game_id):
-    """Get a game in progress"""
-    db = await _get_db()
-
-    guess_word_list = await get_guesswords_in_game(
-        game_id=game_id, 
-        user_id=user_id, 
-        db=db
-    )
-    game_data = await get_game_by_id(
-        game_id=game_id, 
-        user_id=user_id, 
-        db=db
-    )
-
-    if not game_data:
-        abort(404)
-
-    game_data["currentGuessWords"] = guess_word_list
-    return game_data
-
-
-# Get all games in progress from users
-# <int:id> -> user id
-# return -> Array [{
-#   id: int
-#   num_of_guesses: int
-#   user_id: int
-#   win: bool   
-# }]
-@app.route("/user/allGamesInProgress/<int:user_id>", methods=["GET"])
-async def get_all_games_in_progress_user(user_id):
-    """Get all games that are in progress from a user id
-        {id} = user's id
-    """
-    db = await _get_db()
-    user_game_active = await db.fetch_all(
-        """SELECT id, num_of_guesses, user_id, win from game 
-            WHERE user_id=:user_id AND win != true AND num_of_guesses < 6""",
-    values={"user_id": user_id}
-    )
-    if user_game_active:
-        return list(map(dict, user_game_active))
-    else:
-        abort(404)
