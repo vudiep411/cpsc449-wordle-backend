@@ -102,6 +102,20 @@ async def get_game(id):
         abort(404)
 
 
+# Display all users' information 
+
+@app.route("/user", methods=["GET"])
+async def get_user():
+    """Get all users' information"""
+    db = await _get_db()
+    user = await db.fetch_all(
+        "SELECT * FROM users"
+    )
+    return list(map(dict, user))
+
+
+
+
 # *************************************************************************   
 # Register User Route
 # Param
