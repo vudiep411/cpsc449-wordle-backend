@@ -10,12 +10,12 @@ import sqlite3
 import json
 
 # Get the list of valid words
-valid_f = open('valid.json')
+valid_f = open('share/valid.json')
 VALID_DATA = json.load(valid_f)
 valid_f.close()   
 
 # Get the list of correct words and valid words and populate the database
-correct_f = open('correct.json')
+correct_f = open('share/correct.json')
 CORRECT_DATA = json.load(correct_f)
 correct_f.close()
 

@@ -15,12 +15,12 @@ cd cpsc449-wordle-backend/
 <p>3. Install libraries needed</p>
 
 ```sh
-./requirements.sh
+./bin/requirements.sh
 ```
 <p>4. Setting up the database</p>
 
 ```sh
-./init.sh
+./bin/init.sh
 ```
 <p>5. Start the server with foreman</p>
 
