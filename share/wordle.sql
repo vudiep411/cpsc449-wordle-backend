@@ -8,8 +8,7 @@ BEGIN TRANSACTION;
 --  *******************CREATE YOUR SCHEMA HERE *******************
 DROP TABLE IF EXISTS users;
 CREATE TABLE users (
-    id 
-     primary key,
+    id INTEGER primary key,
     username VARCHAR,
     password VARCHAR,      
     UNIQUE(username)
@@ -24,6 +23,9 @@ CREATE TABLE game(
     num_of_guesses INT      
 );
 
+CREATE INDEX game_idx
+ON game (user_id, win, num_of_guesses);
+
 DROP TABLE IF EXISTS userInput;
 CREATE TABLE userInput(
     id INTEGER primary key,
@@ -32,5 +34,6 @@ CREATE TABLE userInput(
     guess_word VARCHAR
 );
 
-
+CREATE INDEX userInput_idx
+ON userInput (user_id, game_id);
 COMMIT;

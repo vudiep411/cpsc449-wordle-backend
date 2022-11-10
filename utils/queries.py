@@ -36,18 +36,20 @@ async def add_new_game(user_id, db):
 # id -> int, game_id
 # db -> database object
 # return correct_word[0] -> str, current game correct word
-async def get_game_correct_word(user_id, id, db):
+async def get_game_correct_word(user_id, id, db, app):
     correct_word = await db.fetch_one(
         'SELECT correct_word from game WHERE user_id=:user_id AND id=:id',
         values={"user_id": user_id, "id": id})
+    app.logger.info('SELECT correct_word from game WHERE user_id=:user_id AND id=:id')
     return correct_word[0]    
 
 
 # Return single user for testing purpose 
 # id -> user_id
 # db -> database oject
-async def get_one_user(id, db):
+async def get_one_user(id, db, app):
     user = await db.fetch_one("SELECT * FROM users WHERE id = :id", values={"id": id})
+    app.logger.info("SELECT * FROM users WHERE id = :id")
     if user:
         return dict(user)
     else:
@@ -93,11 +95,12 @@ async def increment_guesses(id, user_id, db):
 # id -> int, game id
 # user_id -> int, user id
 # return guesses -> tuple(num_of_guesses:int)
-async def get_game_num_guesses(id, user_id, db):
+async def get_game_num_guesses(id, user_id, db, app):
     guesses = await db.fetch_one(
         "SELECT num_of_guesses FROM game WHERE id=:id AND user_id=:user_id",
         values={"id": id, "user_id": user_id}
     )
+    app.logger.info("SELECT num_of_guesses FROM game WHERE id=:id AND user_id=:user_id")
     return guesses    
 
 
@@ -105,11 +108,12 @@ async def get_game_num_guesses(id, user_id, db):
 # id -> int, game id
 # user_id -> int, user id
 # return won -> tuple(win:bool)
-async def get_win_query(id, user_id, db):
+async def get_win_query(id, user_id, db, app):
     won = await db.fetch_one(
         'SELECT win FROM game WHERE user_id=:user_id AND id=:id',
         values={"user_id": user_id, "id": id}
     )
+    app.logger.info('SELECT win FROM game WHERE user_id=:user_id AND id=:id')
     return won
 
 
@@ -134,10 +138,11 @@ async def add_user(username, password, db):
 # Get user by username
 # username -> str, username from request data
 # return tuple(id:int, username:str, password:str)
-async def get_user_by_username(username, db):
+async def get_user_by_username(username, db, app):
     user = await db.fetch_one("SELECT * from users WHERE username=:username",
     values={"username": username}
     )
+    app.logger.info("SELECT * from users WHERE username=:username")
     return user
 
 
@@ -145,11 +150,12 @@ async def get_user_by_username(username, db):
 # game_id -> int, game's id
 # user_id -> int, user's id
 # db -> database object
-async def get_guesswords_in_game(game_id, user_id, db):
+async def get_guesswords_in_game(game_id, user_id, db, app):
     game_guess_words = await db.fetch_all(
         'SELECT guess_word FROM userInput WHERE game_id=:game_id AND user_id=:user_id',
         values={"game_id": game_id, "user_id": user_id}
     )
+    app.logger.info("SELECT guess_word FROM userInput WHERE game_id=:game_id AND user_id=:user_id")
     if game_guess_words:
         guessword_list = [item for t in game_guess_words for item in t]
         return guessword_list 
@@ -160,11 +166,14 @@ async def get_guesswords_in_game(game_id, user_id, db):
 # game_id -> int
 # user_id -> int
 # db -> database object
-async def get_game_by_id(game_id, user_id, db):
+async def get_game_by_id(game_id, user_id, db, app):
     game = await db.fetch_one(
         "SELECT id, user_id, win, num_of_guesses FROM game WHERE id = :id AND user_id=:user_id", 
         values={"id": game_id, "user_id": user_id}
     )
+
+    app.logger.info("SELECT id, user_id, win, num_of_guesses FROM game WHERE id = :id AND user_id=:user_id")
+
     if game:
         return dict(game)
     return {}

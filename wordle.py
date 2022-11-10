@@ -1,9 +1,6 @@
 # 449 Back-end Project-01  10/22/2022
 # Team members:
 # Vu Diep
-# Jiu Lin
-# Heet Savla
-# Shridhar Bhardwaj 
 
 import dataclasses
 import sqlite3
@@ -105,6 +102,7 @@ async def get_game(id):
         "SELECT * FROM game WHERE id = :id", 
         values={"id": id}
     )
+    app.logger.info('SELECT * FROM game WHERE id = :id')
     if game:
         return dict(game)
     else:
@@ -131,6 +129,7 @@ async def get_all_games_user(user_id):
             WHERE user_id=:user_id""",
     values={"user_id": user_id}
     )
+    app.logger.info("SELECT id, num_of_guesses, user_id, win from game WHERE user_id=:user_id")
     if user_game_active:
         return list(map(dict, user_game_active))
     else:
@@ -145,7 +144,7 @@ async def get_all_games_user(user_id):
 #   user_id: int
 #   win: bool   
 # }]
-@app.route("/user/allGamesInProgressForOneUser/<int:user_id>", methods=["GET"])
+@app.route("/user/allGamesInProgress/<int:user_id>", methods=["GET"])
 async def get_all_games_in_progress_user(user_id):
     """Get all games that are in progress from a user id, won/lost games will not display
         {id} = user's id
@@ -156,6 +155,10 @@ async def get_all_games_in_progress_user(user_id):
             WHERE user_id=:user_id AND win != true AND num_of_guesses < 6""",
     values={"user_id": user_id}
     )
+
+    app.logger.info("""SELECT id, num_of_guesses, user_id, win from game 
+            WHERE user_id=:user_id AND win != true AND num_of_guesses < 6""")
+
     if user_game_active:
         return list(map(dict, user_game_active))
     else:
@@ -173,12 +176,14 @@ async def get_user_game_in_progress(user_id, game_id):
     guess_word_list = await get_guesswords_in_game(
         game_id=game_id, 
         user_id=user_id, 
-        db=db
+        db=db,
+        app=app
     )
     game_data = await get_game_by_id(
         game_id=game_id, 
         user_id=user_id, 
-        db=db
+        db=db,
+        app=app
     )
 
     if not game_data:
@@ -237,7 +242,7 @@ async def login(data):
     username = userInput['username']
     password = userInput['password']
 
-    user = await get_user_by_username(username=username, db=db)
+    user = await get_user_by_username(username=username, db=db, app=app)
     
     if user:        
         actualPassword = user[2]
@@ -260,7 +265,7 @@ async def start_user_new_game(data):
     db = await _get_db()
     user_data = dataclasses.asdict(data)
     user_id = user_data["user_id"]
-    user = get_one_user(id=user_id, db=db)
+    user = get_one_user(id=user_id, db=db, app=app)
     if user:
         game_id = await add_new_game(user_id=user_id, db=db)
         return {"game_id": game_id, "user_id": user_id}
@@ -287,10 +292,10 @@ async def post_user_guessword(data):
     user_id = user_guessed["user_id"]
     guess_word = user_guessed["guess_word"]
 
-    current_game_guesswords_list = await get_guesswords_in_game(user_id=user_id, game_id=game_id, db=db)
+    current_game_guesswords_list = await get_guesswords_in_game(user_id=user_id, game_id=game_id, db=db, app=app)
 
-    num_of_guesses = await get_game_num_guesses(id=game_id, user_id=user_id, db=db)
-    won = await get_win_query(id=game_id, user_id=user_id, db=db) 
+    num_of_guesses = await get_game_num_guesses(id=game_id, user_id=user_id, db=db, app=app)
+    won = await get_win_query(id=game_id, user_id=user_id, db=db, app=app) 
 
     # User and game doesn't exist
     if not num_of_guesses or not won: 
@@ -305,7 +310,7 @@ async def post_user_guessword(data):
         return {"error": "Cannot enter the same word twice"}
 
     # Proceed to check
-    correct_word = await get_game_correct_word(id=game_id, user_id=user_id ,db=db)
+    correct_word = await get_game_correct_word(id=game_id, user_id=user_id ,db=db, app=app)
     isValid = False
     isCorrectWord = False
 
