@@ -118,7 +118,7 @@ async def get_game(id):
 #   user_id: int
 #   win: bool   
 # }]
-@app.route("/user/allGames/<int:user_id>", methods=["GET"])
+@app.route("/game/user/<int:user_id>", methods=["GET"])
 async def get_all_games_user(user_id):
     """Get all games from a user id, ( win, lose and in progress )
         {id} = user's id
@@ -144,7 +144,7 @@ async def get_all_games_user(user_id):
 #   user_id: int
 #   win: bool   
 # }]
-@app.route("/user/allGamesInProgress/<int:user_id>", methods=["GET"])
+@app.route("/game/user/allGamesInProgress/<int:user_id>", methods=["GET"])
 async def get_all_games_in_progress_user(user_id):
     """Get all games that are in progress from a user id, won/lost games will not display
         {id} = user's id
@@ -168,7 +168,7 @@ async def get_all_games_in_progress_user(user_id):
 # Get a specific game in progress from user id
 # user_id: -> int, user's id
 # game_id: -> int, user's id
-@app.route("/StateOfGame/<int:user_id>/<int:game_id>")
+@app.route("/game/<int:user_id>/<int:game_id>")
 async def get_user_game_in_progress(user_id, game_id):
     """Get a game in progress"""
     db = await _get_db()
@@ -258,7 +258,7 @@ async def login(data):
 
 # Start a Game
 # Param: data -> JSON {"user_id": int}
-@app.route("/user/startNewGame", methods=["POST"])
+@app.route("/game/user/startNewGame", methods=["POST"])
 @validate_request(UserId)
 async def start_user_new_game(data):
     """Add a new game into database"""
@@ -281,7 +281,7 @@ async def start_user_new_game(data):
 #   "user_id": int
 #   "guess_word": str
 # }
-@app.route("/user/playingAGame", methods=["POST"])
+@app.route("/game/addGuessWord", methods=["POST"])
 @validate_request(GuessWord)
 async def post_user_guessword(data):
     """Add a guessword into database"""
