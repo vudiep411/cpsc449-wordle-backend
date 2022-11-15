@@ -23,8 +23,11 @@ CREATE TABLE game(
     num_of_guesses INT      
 );
 
-CREATE INDEX game_idx
-ON game (user_id, win, num_of_guesses);
+CREATE INDEX game_idx_1
+ON game (user_id, num_of_guesses);
+
+CREATE INDEX game_idx_2
+ON game (user_id, id);
 
 DROP TABLE IF EXISTS userInput;
 CREATE TABLE userInput(
@@ -34,6 +37,6 @@ CREATE TABLE userInput(
     guess_word VARCHAR
 );
 
-CREATE INDEX userInput_idx
+CREATE INDEX userInput_idx_1
 ON userInput (user_id, game_id);
 COMMIT;
