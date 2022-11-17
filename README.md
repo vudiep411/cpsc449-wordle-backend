@@ -1,5 +1,5 @@
-# CPSC 449 Group 22 Project 1
-<p><b>Group Member:</b> Vu Diep, Jiu Lin, Shridhar Bhardwaj, Heet Savla<p/>
+# CPSC 449 Group 21 Project 2
+<p><b>Group Member:</b> Vu Diep, <p/>
 
 ## Installations
 <p>1. Clone the repository</p>
@@ -25,9 +25,14 @@ cd cpsc449-wordle-backend/
 <p>5. Start the server with foreman</p>
 
 ```sh
-foreman start
+./start.sh
 ```
-> ⚠ The development server will be started at http://127.0.0.1:5000/
+
+<p>6. Configure your Nginx similar to [`nginx.config`](nginx.config)</p>
+
+
+> ⚠ The development server for User service will be started at http://127.0.0.1:5100/
+> ⚠ The 3 development servers for Game service will be started at http://127.0.0.1:5000/  http://127.0.0.1:5001/  http://127.0.0.1:5002/
 
 ## Documentation
 
