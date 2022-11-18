@@ -36,7 +36,10 @@ cd cpsc449-wordle-backend/
 
 
 > ⚠ The development server for User service will be started at http://127.0.0.1:5100/ <br/>
-> ⚠ The 3 development servers for Game service will be started at http://127.0.0.1:5000/  http://127.0.0.1:5001/  http://127.0.0.1:5002/
+> ⚠ The 3 development servers for Game service will be started at <br/>
+http://127.0.0.1:5000/  <br/>
+http://127.0.0.1:5001/  <br/>
+http://127.0.0.1:5002/  <br/>
 
 ## Documentation
 
