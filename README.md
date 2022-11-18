@@ -28,7 +28,10 @@ cd cpsc449-wordle-backend/
 ./start.sh
 ```
 <br/>
+
 6. Configure your Nginx similar to [nginx.config](nginx.config)
+
+<br/>
 <br/>
 
 
