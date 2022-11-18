@@ -6,18 +6,10 @@ BEGIN TRANSACTION;
 
 
 --  *******************CREATE YOUR SCHEMA HERE *******************
-DROP TABLE IF EXISTS users;
-CREATE TABLE users (
-    id INTEGER primary key,
-    username VARCHAR,
-    password VARCHAR,      
-    UNIQUE(username)
-);
-
 DROP TABLE IF EXISTS game;
 CREATE TABLE game(
     id INTEGER primary key,
-    user_id INT references user(id),
+    user_id,
     correct_word VARCHAR,
     win BOOLEAN,
     num_of_guesses INT      
@@ -32,7 +24,7 @@ ON game (user_id, id);
 DROP TABLE IF EXISTS userInput;
 CREATE TABLE userInput(
     id INTEGER primary key,
-    user_id INT references users(id),
+    user_id,
     game_id INT references game(id),
     guess_word VARCHAR
 );
