@@ -36,4 +36,4 @@ cd cpsc449-wordle-backend/
 
 ## Documentation
 
-<p>After starting the server with foreman start, go to http://127.0.0.1:5000/docs for all REST API routes example</p>
+<p>After starting the server with foreman start, go to http://127.0.0.1:5000/docs and http://127.0.0.1:5100/docs for all REST API routes example</p>
