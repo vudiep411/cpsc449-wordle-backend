@@ -84,7 +84,7 @@ def unauthorize(e):
 # ***************************** TEST ROUTES ********************************** 
 
 
-@app.route("/game", methods=["GET"])
+@app.route("/game/", methods=["GET"])
 def wordle():
     """Game Route (dev only)"""
     return textwrap.dedent( """<h1>Welcome to wordle api project Game service</h1>
