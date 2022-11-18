@@ -27,8 +27,9 @@ cd cpsc449-wordle-backend/
 ```sh
 ./start.sh
 ```
-
-<p>6. Configure your Nginx similar to [nginx.config.example](nginx.config.example)</p>
+<br/>
+6. Configure your Nginx similar to [nginx.config](nginx.config)
+<br/>
 
 
 > ⚠ The development server for User service will be started at http://127.0.0.1:5100/ <br/>
