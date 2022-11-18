@@ -114,8 +114,6 @@ async def register(data):
     except sqlite3.IntegrityError as e:
         abort(409, e)
 
-    await add_new_game(user_id=user_id, db=db)  # automatically start a new game 
-
     return {"authenticated": True, "username": user["username"]}, 201, {"Location": f"/user/{user_id}"}
 
 
