@@ -74,6 +74,7 @@ def unauthorize(e):
     return str(e), 401
 
 
+
 @app.route("/user/", methods=["GET"])
 def user():
     """User Route (dev only)"""
@@ -128,16 +129,15 @@ async def login():
     """ Login Route
     Provide username and password to login
     """
-    print("LOGIN IS HERE")
     auth = request.authorization
-
+    print(auth)
     # return bad request if invalid auth header
     if not auth:
-        abort(400, "Authorization header is required.")
+        abort(401)
 
     # check both username and password are present
     if not auth.username or not auth.password:
-        abort(400, "Username and password are required.")
+        abort(401)
 
     db = await _get_db()
     authenticated = False
