@@ -71,7 +71,7 @@ def conflict(e):
 
 @app.errorhandler(401)
 def unauthorize(e):
-    return str(e), 401
+    return str(e), 401, {"WWW-Authenticate": 'Basic realm=User Login'}
 
 
 
