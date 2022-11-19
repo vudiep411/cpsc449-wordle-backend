@@ -28,21 +28,21 @@ class User:
 
 @dataclasses.dataclass
 class GuessWord:
-    user_id: int
+    username: str
     game_id: int
     guess_word: str
 
 @dataclasses.dataclass
 class Game:
     id: int
-    user_id: int
+    username: str
     correct_word: str
     win: bool
     num_of_guesses: int
 
 @dataclasses.dataclass
-class UserId:
-    user_id: int
+class Username:
+    username: str
 
 
 # DATABASE CONNECTION
@@ -115,21 +115,21 @@ async def get_game(id):
 # return -> Array [{
 #   id: int
 #   num_of_guesses: int
-#   user_id: int
+#   username: str
 #   win: bool   
 # }]
-@app.route("/game/user/<int:user_id>", methods=["GET"])
-async def get_all_games_user(user_id):
+@app.route("/game/user/<string:username>", methods=["GET"])
+async def get_all_games_user(username):
     """Get all games from a user id, ( win, lose and in progress )
-        {id} = user's id
+        {username} = username
     """
     db = await _get_db()
     user_game_active = await db.fetch_all(
-        """SELECT id, num_of_guesses, user_id, win from game 
-            WHERE user_id=:user_id""",
-    values={"user_id": user_id}
+        """SELECT id, num_of_guesses, username, win from game 
+            WHERE username=:username""",
+    values={"username": username}
     )
-    app.logger.info("SELECT id, num_of_guesses, user_id, win from game WHERE user_id=:user_id")
+    app.logger.info("SELECT id, num_of_guesses, username, win from game WHERE username=:username")
     if user_game_active:
         return list(map(dict, user_game_active))
     else:
@@ -141,23 +141,22 @@ async def get_all_games_user(user_id):
 # return -> Array [{
 #   id: int
 #   num_of_guesses: int
-#   user_id: int
+#   username: str
 #   win: bool   
 # }]
-@app.route("/game/user/allGamesInProgress/<int:user_id>", methods=["GET"])
-async def get_all_games_in_progress_user(user_id):
+@app.route("/game/user/allGamesInProgress/<string:username>", methods=["GET"])
+async def get_all_games_in_progress_user(username):
     """Get all games that are in progress from a user id, won/lost games will not display
-        {id} = user's id
     """
     db = await _get_db()
     user_game_active = await db.fetch_all(
-        """SELECT id, num_of_guesses, user_id, win from game 
-            WHERE user_id=:user_id AND win != true AND num_of_guesses < 6""",
-    values={"user_id": user_id}
+        """SELECT id, num_of_guesses, username, win from game 
+            WHERE username=:username AND win != true AND num_of_guesses < 6""",
+    values={"username": username}
     )
 
-    app.logger.info("""SELECT id, num_of_guesses, user_id, win from game 
-            WHERE user_id=:user_id AND win != true AND num_of_guesses < 6""")
+    app.logger.info("""SELECT id, num_of_guesses, username, win from game 
+            WHERE username=:username AND win != true AND num_of_guesses < 6""")
 
     if user_game_active:
         return list(map(dict, user_game_active))
@@ -166,22 +165,22 @@ async def get_all_games_in_progress_user(user_id):
 
 
 # Get a specific game in progress from user id
-# user_id: -> int, user's id
+# username: -> str
 # game_id: -> int, user's id
-@app.route("/game/<int:user_id>/<int:game_id>")
-async def get_user_game_in_progress(user_id, game_id):
+@app.route("/game/<string:username>/<int:game_id>")
+async def get_user_game_in_progress(username, game_id):
     """Get a game in progress"""
     db = await _get_db()
 
     guess_word_list = await get_guesswords_in_game(
         game_id=game_id, 
-        user_id=user_id, 
+        username=username, 
         db=db,
         app=app
     )
     game_data = await get_game_by_id(
         game_id=game_id, 
-        user_id=user_id, 
+        username=username, 
         db=db,
         app=app
     )
@@ -194,28 +193,24 @@ async def get_user_game_in_progress(user_id, game_id):
 
 
 # Start a Game
-# Param: data -> JSON {"user_id": int}
+# Param: data -> JSON {"username": str}
 @app.route("/game/user/startNewGame", methods=["POST"])
-@validate_request(UserId)
+@validate_request(Username)
 async def start_user_new_game(data):
     """Add a new game into database"""
     db = await _get_db()
     user_data = dataclasses.asdict(data)
-    user_id = user_data["user_id"]
-    user = get_one_user(id=user_id, db=db, app=app)
-    if user:
-        game_id = await add_new_game(user_id=user_id, db=db)
-        return {"game_id": game_id, "user_id": user_id}
-    return abort(404)
+    username = user_data["username"]
+    game_id = await add_new_game(username=username, db=db)
 
-
-
+    return {"game_id": game_id, "username": username}
+    
 
 # Add a guess word from user to database
 # Param: 
 # data -> JSON {
 #   "id": int
-#   "user_id": int
+#   "username": str
 #   "guess_word": str
 # }
 @app.route("/game/addGuessWord", methods=["POST"])
@@ -226,13 +221,13 @@ async def post_user_guessword(data):
     user_guessed = dataclasses.asdict(data)  # Data from POST req
 
     game_id = user_guessed["game_id"]
-    user_id = user_guessed["user_id"]
+    username = user_guessed["username"]
     guess_word = user_guessed["guess_word"]
 
-    current_game_guesswords_list = await get_guesswords_in_game(user_id=user_id, game_id=game_id, db=db, app=app)
+    current_game_guesswords_list = await get_guesswords_in_game(username=username, game_id=game_id, db=db, app=app)
 
-    num_of_guesses = await get_game_num_guesses(id=game_id, user_id=user_id, db=db, app=app)
-    won = await get_win_query(id=game_id, user_id=user_id, db=db, app=app) 
+    num_of_guesses = await get_game_num_guesses(id=game_id, username=username, db=db, app=app)
+    won = await get_win_query(id=game_id, username=username, db=db, app=app) 
 
     # User and game doesn't exist
     if not num_of_guesses or not won: 
@@ -247,7 +242,7 @@ async def post_user_guessword(data):
         return {"error": "Cannot enter the same word twice"}
 
     # Proceed to check
-    correct_word = await get_game_correct_word(id=game_id, user_id=user_id ,db=db, app=app)
+    correct_word = await get_game_correct_word(id=game_id, username=username ,db=db, app=app)
     isValid = False
     isCorrectWord = False
 
@@ -259,19 +254,19 @@ async def post_user_guessword(data):
         if guess_word in VALID_DATA:     
             await add_user_guessed_word(
                 id=game_id, 
-                user_id=user_id, 
+                username=username, 
                 guess_word=guess_word, 
                 db=db
             )
 
             if guess_word == correct_word:
-                await set_win_user(id=game_id, user_id=user_id, db=db)
+                await set_win_user(id=game_id, username=username, db=db)
                 letter_map = {
                     'correctPosition' : list(range(6)),
                     'correctLetterWrongPos': [],
                     'wrongLetter' : []
                 }
-                await increment_guesses(id=game_id, user_id=user_id, db=db)
+                await increment_guesses(id=game_id, username=username, db=db)
                 isCorrectWord=True
 
             else:
@@ -279,7 +274,7 @@ async def post_user_guessword(data):
                     guess_word=guess_word, 
                     correct_word=correct_word
                 )
-                await increment_guesses(id=game_id, user_id=user_id, db=db)
+                await increment_guesses(id=game_id, username=username, db=db)
             isValid = True
         else:
             return {"error": "Invalid word"}

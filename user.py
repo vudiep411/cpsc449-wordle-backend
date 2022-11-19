@@ -74,7 +74,6 @@ def unauthorize(e):
     return str(e), 401, {"WWW-Authenticate": 'Basic realm=User Login'}
 
 
-
 @app.route("/user/", methods=["GET"])
 def user():
     """User Route (dev only)"""
@@ -148,7 +147,7 @@ async def login():
     user = await get_user_by_username(username=username, db=db, app=app)
     
     if user:        
-        actualPassword = user[2]
+        actualPassword = user[1]
         if bcrypt.checkpw(password.encode('UTF-8'), actualPassword.encode('UTF-8')):
             authenticated=True
             
