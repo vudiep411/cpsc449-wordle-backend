@@ -1,5 +1,5 @@
 # CPSC 449 Group 21 Project 2
-<p><b>Group Member:</b> Vu Diep, Sreevidya Sreekantham, <p/>
+<p><b>Group Member:</b> Vu Diep, Sreevidya Sreekantham, Rakesh Singh, Fenil Bhimani</p>
 
 ## Installations
 <p>1. Clone the repository</p>

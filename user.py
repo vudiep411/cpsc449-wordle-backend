@@ -6,7 +6,7 @@ import toml
 import bcrypt
 from quart import Quart, g, abort, request
 from quart_schema import QuartSchema, RequestSchemaValidationError, validate_request
-from utils.queries import *
+from utils.user_queries import *
 
 
 app = Quart(__name__)
@@ -72,7 +72,6 @@ def conflict(e):
 @app.errorhandler(401)
 def unauthorize(e):
     return str(e), 401, {"WWW-Authenticate": 'Basic realm=User Login'}
-
 
 
 @app.route("/user/", methods=["GET"])
@@ -148,7 +147,7 @@ async def login():
     user = await get_user_by_username(username=username, db=db, app=app)
     
     if user:        
-        actualPassword = user[2]
+        actualPassword = user[1]
         if bcrypt.checkpw(password.encode('UTF-8'), actualPassword.encode('UTF-8')):
             authenticated=True
             

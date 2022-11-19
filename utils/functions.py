@@ -28,15 +28,15 @@ def check_pos_valid_letter(guess_word, correct_word):
     wrong_letter = []
     for i in range(0, len(correct_word)):
         if guess_word[i] in correct_word and guess_word[i] == correct_word[i]:
-            correct_pos.append(guess_word[i])
+            correct_pos.append(i)
             letter_freq[guess_word[i]] -= 1
 
         elif guess_word[i] in correct_word and letter_freq[guess_word[i]] > 0:
-            correct_letter_wrong_pos.append(guess_word[i])
+            correct_letter_wrong_pos.append(i)
             letter_freq[guess_word[i]] -= 1
             
         else:
-            wrong_letter.append(guess_word[i])
+            wrong_letter.append(i)
         
     return {
         'correctPosition' : correct_pos,

@@ -9,26 +9,26 @@ BEGIN TRANSACTION;
 DROP TABLE IF EXISTS game;
 CREATE TABLE game(
     id INTEGER primary key,
-    user_id,
+    username VARCHAR,
     correct_word VARCHAR,
     win BOOLEAN,
     num_of_guesses INT      
 );
 
 CREATE INDEX game_idx_1
-ON game (user_id, num_of_guesses);
+ON game (username, num_of_guesses);
 
 CREATE INDEX game_idx_2
-ON game (user_id, id);
+ON game (username, id);
 
 DROP TABLE IF EXISTS userInput;
 CREATE TABLE userInput(
     id INTEGER primary key,
-    user_id,
+    username VARCHAR,
     game_id INT references game(id),
     guess_word VARCHAR
 );
 
 CREATE INDEX userInput_idx_1
-ON userInput (user_id, game_id);
+ON userInput (username, game_id);
 COMMIT;
