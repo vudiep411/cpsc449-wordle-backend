@@ -6,7 +6,7 @@ import toml
 import bcrypt
 from quart import Quart, g, abort, request
 from quart_schema import QuartSchema, RequestSchemaValidationError, validate_request
-from utils.queries import *
+from utils.user_queries import *
 
 
 app = Quart(__name__)
