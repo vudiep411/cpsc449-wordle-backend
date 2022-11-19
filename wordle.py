@@ -12,7 +12,7 @@ from quart import Quart, g, abort
 from quart_schema import QuartSchema, RequestSchemaValidationError, validate_request
 from utils.queries import *
 from utils.functions import check_pos_valid_letter
-
+import uuid
 
 app = Quart(__name__)
 QuartSchema(app)
@@ -29,12 +29,12 @@ class User:
 @dataclasses.dataclass
 class GuessWord:
     username: str
-    game_id: int
+    game_id: str
     guess_word: str
 
 @dataclasses.dataclass
 class Game:
-    id: int
+    id: str
     username: str
     correct_word: str
     win: bool
@@ -94,7 +94,7 @@ def wordle():
 
 
 # Get a game by id show the correct word for testing
-@app.route("/game/<int:id>", methods=["GET"])
+@app.route("/game/<string:id>", methods=["GET"])
 async def get_game(id):
     """Get the correct word for a game by game_id (dev only)"""
     db = await _get_db()
@@ -144,9 +144,9 @@ async def get_all_games_user(username):
 #   username: str
 #   win: bool   
 # }]
-@app.route("/game/user/allGamesInProgress/<string:username>", methods=["GET"])
+@app.route("/game/user/gamesinprogress/<string:username>", methods=["GET"])
 async def get_all_games_in_progress_user(username):
-    """Get all games that are in progress from a user id, won/lost games will not display
+    """Get all games that are in progress from a user name, won/lost games will not display
     """
     db = await _get_db()
     user_game_active = await db.fetch_all(
@@ -167,7 +167,7 @@ async def get_all_games_in_progress_user(username):
 # Get a specific game in progress from user id
 # username: -> str
 # game_id: -> int, user's id
-@app.route("/game/<string:username>/<int:game_id>")
+@app.route("/game/<string:username>/<string:game_id>")
 async def get_user_game_in_progress(username, game_id):
     """Get a game in progress"""
     db = await _get_db()
@@ -194,14 +194,15 @@ async def get_user_game_in_progress(username, game_id):
 
 # Start a Game
 # Param: data -> JSON {"username": str}
-@app.route("/game/user/startNewGame", methods=["POST"])
+@app.route("/game/user/start", methods=["POST"])
 @validate_request(Username)
 async def start_user_new_game(data):
     """Add a new game into database"""
     db = await _get_db()
     user_data = dataclasses.asdict(data)
     username = user_data["username"]
-    game_id = await add_new_game(username=username, db=db)
+    game_id = uuid.uuid4()
+    await add_new_game(game_id=game_id, username=username, db=db)
 
     return {"game_id": game_id, "username": username}
     
@@ -213,7 +214,7 @@ async def start_user_new_game(data):
 #   "username": str
 #   "guess_word": str
 # }
-@app.route("/game/addGuessWord", methods=["POST"])
+@app.route("/game/guess", methods=["POST"])
 @validate_request(GuessWord)
 async def post_user_guessword(data):
     """Add a guessword into database"""

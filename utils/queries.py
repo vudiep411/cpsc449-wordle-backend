@@ -7,7 +7,6 @@
 #   Purpose: Perform SQL queries
 
 from random import randint
-from quart import abort
 
 
 # Add a new game for a user
@@ -15,17 +14,17 @@ from quart import abort
 # username -> str
 # db -> database object
 # return game_id -> int, created game's id
-async def add_new_game(username, db):
+async def add_new_game(username, db, game_id):
     d = await db.fetch_all('SELECT word FROM correct')
     correctData = [item for t in d for item in t]
     randomIndex = randint(0, len(correctData) - 1)
     CORRECT_WORD = correctData[randomIndex]  
     game_id = await db.execute(
         """
-        INSERT INTO game(username, correct_word, win, num_of_guesses) 
-        VALUES(:username, :correct_word, :win, :num_of_guesses)
+        INSERT INTO game(id, username, correct_word, win, num_of_guesses) 
+        VALUES(:id, :username, :correct_word, :win, :num_of_guesses)
         """, 
-        values={"username": username, "correct_word": CORRECT_WORD, "win": False, "num_of_guesses": 0})
+        values={"id": str(game_id), "username": username, "correct_word": CORRECT_WORD, "win": False, "num_of_guesses": 0})
 
     return game_id
 

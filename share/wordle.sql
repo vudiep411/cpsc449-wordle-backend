@@ -8,7 +8,7 @@ BEGIN TRANSACTION;
 --  *******************CREATE YOUR SCHEMA HERE *******************
 DROP TABLE IF EXISTS game;
 CREATE TABLE game(
-    id INTEGER primary key,
+    id VARCHAR primary key,
     username VARCHAR,
     correct_word VARCHAR,
     win BOOLEAN,
