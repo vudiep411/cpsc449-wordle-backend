@@ -128,6 +128,7 @@ async def login():
     """ Login Route
     Provide username and password to login
     """
+    print("LOGIN IS HERE")
     auth = request.authorization
 
     # return bad request if invalid auth header
