@@ -4,7 +4,7 @@ import textwrap
 import databases
 import toml
 import bcrypt
-from quart import Quart, g, abort
+from quart import Quart, g, abort, request
 from quart_schema import QuartSchema, RequestSchemaValidationError, validate_request
 from utils.queries import *
 
@@ -124,16 +124,25 @@ async def register(data):
 #   "password": str
 # }
 @app.route("/user/login", methods=["POST"])
-@validate_request(User)
-async def login(data):
+async def login():
     """ Login Route
     Provide username and password to login
     """
+    auth = request.authorization
+
+    # return bad request if invalid auth header
+    if not auth:
+        abort(400, "Authorization header is required.")
+
+    # check both username and password are present
+    if not auth.username or not auth.password:
+        abort(400, "Username and password are required.")
+
     db = await _get_db()
     authenticated = False
-    userInput = dataclasses.asdict(data)
-    username = userInput['username']
-    password = userInput['password']
+
+    username = auth.username
+    password = auth.password
 
     user = await get_user_by_username(username=username, db=db, app=app)
     
