@@ -123,7 +123,7 @@ async def register(data):
 #   "username": str
 #   "password": str
 # }
-@app.route("/user/login", methods=["POST"])
+@app.route("/user/login", methods=["GET"])
 async def login():
     """ Login Route
     Provide username and password to login
