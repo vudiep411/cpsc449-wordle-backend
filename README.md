@@ -29,7 +29,7 @@ cd cpsc449-wordle-backend/
 ```
 <br/>
 
-6. Configure your Nginx similar to [nginx.config](nginx.config)
+6. Configure your Nginx similar to [nginx.confg](nginx.confg)
 
 <br/>
 <br/>
