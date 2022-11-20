@@ -120,7 +120,7 @@ async def get_game(id):
 # }]
 @app.route("/game/user/<string:username>", methods=["GET"])
 async def get_all_games_user(username):
-    """Get all games from a user id, ( win, lose and in progress )
+    """Get all games by a username, ( win, lose and in progress )
         {username} = username
     """
     db = await _get_db()
@@ -146,7 +146,7 @@ async def get_all_games_user(username):
 # }]
 @app.route("/game/user/gamesinprogress/<string:username>", methods=["GET"])
 async def get_all_games_in_progress_user(username):
-    """Get all games that are in progress from a user name, won/lost games will not display
+    """Get all games that are in progress from a username, won/lost games will not display
     """
     db = await _get_db()
     user_game_active = await db.fetch_all(
@@ -197,7 +197,7 @@ async def get_user_game_in_progress(username, game_id):
 @app.route("/game/user/start", methods=["POST"])
 @validate_request(Username)
 async def start_user_new_game(data):
-    """Add a new game into database"""
+    """Add a new game into database and return the game_id"""
     db = await _get_db()
     user_data = dataclasses.asdict(data)
     username = user_data["username"]

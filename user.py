@@ -129,7 +129,7 @@ async def login():
     Provide username and password to login
     """
     auth = request.authorization
-    print(auth)
+
     # return bad request if invalid auth header
     if not auth:
         abort(401)
