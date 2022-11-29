@@ -1,0 +1,18 @@
+# Required. Path used to access LiteFS from your application.
+mount-dir: "./var/primary/mount"
+
+# Optional. Path to store underlying data.
+data-dir: "./var/primary/data"
+debug: true
+
+exec: "hypercorn wordle --reload --debug --bind books.local.gd:$PORT --access-logfile - --error-logfile - --log-level DEBUG"
+
+static:
+  # Specifies that the current node is the primary.
+  primary: true
+
+  # Required. Hostname of the primary node.
+  hostname: "localhost"
+
+  # Required. The API URL of the primary node.
+  advertise-url: "http://localhost:20202" 
