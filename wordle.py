@@ -7,7 +7,6 @@ import sqlite3
 import textwrap
 import databases
 import toml
-import bcrypt
 from quart import Quart, g, abort
 from quart_schema import QuartSchema, RequestSchemaValidationError, validate_request
 from utils.queries import *
@@ -46,14 +45,24 @@ class Username:
 
 
 # DATABASE CONNECTION
-async def _connect_db():
-    database = databases.Database(app.config["DATABASES"]["URL"])
-    await database.connect()
-    return database
+async def _connect_db(num):
+    if num == 1:
+        return databases.Database(app.config["DATABASES"]["URL1"])
+        # await rep1.connect()
+        # return rep1
+    elif num == 2:
+        return databases.Database(app.config["DATABASES"]["URL2"])
+        # await rep2.connect()
+        # return rep2
+    else:
+        database = databases.Database(app.config["DATABASES"]["URL"])
+        await database.connect()
+        return database
 
-def _get_db():
+
+def _get_db(num):
     if not hasattr(g, "sqlite_db"):
-        g.sqlite_db = _connect_db()
+        g.sqlite_db = _connect_db(num)
     return g.sqlite_db
 
 @app.teardown_appcontext
@@ -97,7 +106,8 @@ def wordle():
 @app.route("/game/<string:id>", methods=["GET"])
 async def get_game(id):
     """Get the correct word for a game by game_id (dev only)"""
-    db = await _get_db()
+
+    db = await _get_db(0)
     game = await db.fetch_one(
         "SELECT * FROM game WHERE id = :id", 
         values={"id": id}
@@ -123,7 +133,9 @@ async def get_all_games_user(username):
     """Get all games by a username, ( win, lose and in progress )
         {username} = username
     """
-    db = await _get_db()
+
+    db = await _get_db(2)
+
     user_game_active = await db.fetch_all(
         """SELECT id, num_of_guesses, username, win from game 
             WHERE username=:username""",
@@ -148,7 +160,7 @@ async def get_all_games_user(username):
 async def get_all_games_in_progress_user(username):
     """Get all games that are in progress from a username, won/lost games will not display
     """
-    db = await _get_db()
+    db = await _get_db(0)
     user_game_active = await db.fetch_all(
         """SELECT id, num_of_guesses, username, win from game 
             WHERE username=:username AND win != true AND num_of_guesses < 6""",
@@ -170,8 +182,7 @@ async def get_all_games_in_progress_user(username):
 @app.route("/game/<string:username>/<string:game_id>")
 async def get_user_game_in_progress(username, game_id):
     """Get a game in progress"""
-    db = await _get_db()
-
+    db = await _get_db(0)
     guess_word_list = await get_guesswords_in_game(
         game_id=game_id, 
         username=username, 
@@ -198,7 +209,7 @@ async def get_user_game_in_progress(username, game_id):
 @validate_request(Username)
 async def start_user_new_game(data):
     """Add a new game into database and return the game_id"""
-    db = await _get_db()
+    db = await _get_db(0)
     user_data = dataclasses.asdict(data)
     username = user_data["username"]
     game_id = uuid.uuid4()
@@ -218,7 +229,7 @@ async def start_user_new_game(data):
 @validate_request(GuessWord)
 async def post_user_guessword(data):
     """Add a guessword into database"""
-    db = await _get_db()
+    db = await _get_db(0)
     user_guessed = dataclasses.asdict(data)  # Data from POST req
 
     game_id = user_guessed["game_id"]
