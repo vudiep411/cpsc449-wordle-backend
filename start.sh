@@ -1,1 +1,1 @@
-foreman start -m user=1,game=3
+foreman start -m user=1,primary=3

@@ -7,8 +7,6 @@ data-dir: "./var/secondary2/data"
 
 debug: true
 
-exec: "hypercorn wordle --reload --debug --bind books.local.gd:$PORT --access-logfile - --error-logfile - --log-level DEBUG"
-
 http:
   addr: ":20204"
 

@@ -1,2 +1,4 @@
 [DATABASES]
 URL = 'sqlite+aiosqlite:///var/primary/mount/wordle.db'
+URL1 = 'sqlite+aiosqlite:///var/secondary1/mount/wordle.db'
+URL2 = 'sqlite+aiosqlite:///var/secondary2/mount/wordle.db'
