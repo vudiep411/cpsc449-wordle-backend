@@ -1,0 +1,21 @@
+# Required. Path used to access LiteFS from your application.
+# mount-dir: "./bin/litefs"
+mount-dir: "./var/secondary2/mount"
+
+# Optional. Path to store underlying data.
+data-dir: "./var/secondary2/data"
+
+debug: true
+
+http:
+  addr: ":20204"
+
+static:
+  # Specifies that the current node is the primary.
+  primary: false
+
+  # Required. Hostname of the primary node.
+  hostname: "localhost"
+
+  # Required. The API URL of the primary node.
+  advertise-url: "http://localhost:20202"

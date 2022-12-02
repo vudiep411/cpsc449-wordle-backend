@@ -20,7 +20,7 @@ CORRECT_DATA = json.load(correct_f)
 correct_f.close()
 
 # Connect to db
-connection = sqlite3.connect(f'./var/wordle.db')
+connection = sqlite3.connect(f'./var/primary/mount/wordle.db')
 cursor = connection.cursor()
 
 # Create table
