@@ -1,5 +1,5 @@
-# CPSC 449 Group 21 Project 2
-<p><b>Group Member:</b> Vu Diep, Sreevidya Sreekantham, Rakesh Singh, Fenil Bhimani</p>
+# CPSC 449 Group 21 Project 3
+<p><b>Group Member:</b> Vu Diep, Shridhar Bhardwaj</p>
 
 ## Installations
 <p>1. Clone the repository</p>
@@ -35,11 +35,14 @@ cd cpsc449-wordle-backend/
 <br/>
 
 
-> ⚠ The development server for User service will be started at http://127.0.0.1:5100/ <br/>
+> ⚠ The development server for User service will be started at http://127.0.0.1:5000/ <br/>
 > ⚠ The 3 development servers for Game service will be started at <br/>
-http://127.0.0.1:5000/  <br/>
-http://127.0.0.1:5001/  <br/>
-http://127.0.0.1:5002/  <br/>
+http://127.0.0.1:5100/  <br/>
+http://127.0.0.1:5200/  <br/>
+http://127.0.0.1:5300/  <br/>
+> ⚠ Leaderboard service will be started at http://127.0.0.1:5400/ <br/>
+
+To access leaderboard data through nginx, visit http://tuffix-vm/leaders
 
 ## Documentation
 
