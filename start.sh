@@ -1,1 +1,0 @@
-foreman start -m user=1,primary=3

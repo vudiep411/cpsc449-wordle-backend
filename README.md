@@ -25,7 +25,12 @@ cd cpsc449-wordle-backend/
 <p>5. Start the server with foreman</p>
 
 ```sh
-./start.sh
+foreman start
+```
+
+<p>6. Start redis server</p>
+```sh
+./redis.sh
 ```
 <br/>
 
