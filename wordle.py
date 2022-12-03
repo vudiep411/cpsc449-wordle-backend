@@ -135,9 +135,11 @@ async def get_all_games_user(username):
     """Get all games by a username, ( win, lose and in progress )
         {username} = username
     """
+    
     num = next(iterator)
     print(num)
     db = await _get_db(num)
+
 
     user_game_active = await db.fetch_all(
         """SELECT id, num_of_guesses, username, win from game 
@@ -163,8 +165,10 @@ async def get_all_games_user(username):
 async def get_all_games_in_progress_user(username):
     """Get all games that are in progress from a username, won/lost games will not display
     """
+
     num = next(iterator)
     db = await _get_db(num)
+
     user_game_active = await db.fetch_all(
         """SELECT id, num_of_guesses, username, win from game 
             WHERE username=:username AND win != true AND num_of_guesses < 6""",
@@ -186,8 +190,10 @@ async def get_all_games_in_progress_user(username):
 @app.route("/game/<string:username>/<string:game_id>")
 async def get_user_game_in_progress(username, game_id):
     """Get a game in progress"""
+
     num = next(iterator)
     db = await _get_db(num)
+
     guess_word_list = await get_guesswords_in_game(
         game_id=game_id, 
         username=username, 
