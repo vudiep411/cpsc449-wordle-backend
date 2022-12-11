@@ -35,7 +35,7 @@ foreman start
 ```
 <br/>
 
-6. Configure your Nginx similar to [nginx.confg](nginx.confg)
+7. Configure your Nginx similar to [nginx.confg](nginx.confg)
 
 <br/>
 <br/>
