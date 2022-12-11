@@ -29,6 +29,7 @@ foreman start
 ```
 
 <p>6. Start redis server</p>
+
 ```sh
 ./redis.sh
 ```
