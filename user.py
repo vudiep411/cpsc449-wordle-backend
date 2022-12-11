@@ -4,10 +4,10 @@ import textwrap
 import databases
 import toml
 import bcrypt
+import json
 from quart import Quart, g, abort, request
 from quart_schema import QuartSchema, RequestSchemaValidationError, validate_request
 from utils.user_queries import *
-
 
 app = Quart(__name__)
 QuartSchema(app)
@@ -73,13 +73,13 @@ def conflict(e):
 def unauthorize(e):
     return str(e), 401, {"WWW-Authenticate": 'Basic realm=User Login'}
 
-
 @app.route("/user/", methods=["GET"])
 def user():
     """User Route (dev only)"""
     return textwrap.dedent( """<h1>Welcome to User service</h1>
                 <p>Vu Diep</p>
     """)
+
 
 @app.route("/", methods=["GET"])
 def home():
