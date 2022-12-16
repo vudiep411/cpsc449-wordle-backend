@@ -3,8 +3,9 @@ import textwrap
 import redis
 from quart import Quart, g, abort, request
 from quart_schema import QuartSchema, RequestSchemaValidationError, validate_request
-
-import httpx
+import time
+import requests
+import json
 
 app = Quart(__name__)
 QuartSchema(app)
@@ -15,6 +16,32 @@ class GameData:
     username: str
     num_of_guesses: int
     win: bool
+
+# Register with Game service
+
+@app.before_serving
+def register_callback():
+    error = True
+    while error:
+        try:
+            time.sleep(2)            
+            url = "https://webhook.site/68f8898e-78c7-46a6-9bfb-0ab6bcad684c"
+            data = {"url": url}
+            r = requests.post(url='http://localhost:5100/game/webhook', json=data)
+            print(r.status_code)
+
+            if r.status_code == 200 or r.status_code == 409:
+                error = False
+
+            else:
+                time.sleep(2) 
+                print("retrying...")
+                error = True
+        except requests.exceptions.HTTPError:
+            time.sleep(2)
+            print("retrying...")
+            error = True
+
 
 
 # Handle bad routes/errors
@@ -56,6 +83,7 @@ def get_score(guesses, win):
         return 1
     else:
         return 0
+
 
 # Leaderboard
 @app.route("/leaderboard/", methods=["GET"])
@@ -100,8 +128,12 @@ async def add_game(data):
         no_of_games = no_of_games.decode("utf-8")
     else:
         no_of_games = 1
-    
-    avg = (int(current_score) + int(game_score)) // int(no_of_games)
+
+    print(game_score)
+    print(current_score)
+    print(no_of_games)
+
+    avg = ((int(current_score) + int(game_score))) / int(no_of_games)
     r.hset(username, "score", avg)
 
     print(avg)
@@ -123,9 +155,10 @@ async def get_user():
     arr = r.zrevrange("players", 0, -1, withscores=True)
     top_players = {}
     i = 0
+    print(arr)
     while i < len(arr) and i < 10:
         player = arr[i]
-        top_players[i+1] = player[0].decode("utf-8")
+        top_players[i+1] = player[0].decode("utf-8") + " - " + str(player[1])
         i += 1
         
     print(top_players)

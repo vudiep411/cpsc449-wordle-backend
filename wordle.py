@@ -8,11 +8,15 @@ import sqlite3
 import textwrap
 import databases
 import toml
-from quart import Quart, g, abort
+from quart import Quart, g, abort, request
 from quart_schema import QuartSchema, RequestSchemaValidationError, validate_request
 from utils.queries import *
-from utils.functions import check_pos_valid_letter
+from utils.functions import check_pos_valid_letter, add_to_leaderboard
 import uuid
+from redis import Redis
+from rq import Queue
+from rq import Retry, Queue
+
 
 app = Quart(__name__)
 QuartSchema(app)
@@ -44,18 +48,24 @@ class Game:
 class Username:
     username: str
 
+@dataclasses.dataclass
+class Webhooks:
+    url: str
+
+# Global Variables
 iterator = cycle([0, 1, 2])
+q = Queue(connection=Redis())
 
 # DATABASE CONNECTION
 async def _connect_db(num):
     if num == 1:
-        return databases.Database(app.config["DATABASES"]["URL1"])
-        # await rep1.connect()
-        # return rep1
+        database = databases.Database(app.config["DATABASES"]["URL1"])
+        await database.connect()
+        return database
     elif num == 2:
-        return databases.Database(app.config["DATABASES"]["URL2"])
-        # await rep2.connect()
-        # return rep2
+        database = databases.Database(app.config["DATABASES"]["URL2"])
+        await database.connect()
+        return database
     else:
         database = databases.Database(app.config["DATABASES"]["URL"])
         await database.connect()
@@ -120,6 +130,22 @@ async def get_game(id):
     else:
         abort(404)
 
+# ********************************************************************************* 
+
+@app.route("/game/webhook", methods=["POST"])
+@validate_request(Webhooks)
+async def register_webhook(data):
+    db = await _get_db(0)
+    input_data = dataclasses.asdict(data)
+    print("here")
+    callback_url = input_data["url"]
+    try:
+        await db.execute("INSERT INTO webhook (url) VALUES (:url)", values={"url": callback_url})
+
+    except sqlite3.IntegrityError as e:
+        abort(409, e)
+
+    return {"url" : callback_url}, 200 
 
 
 # Get all games from users
@@ -256,8 +282,15 @@ async def post_user_guessword(data):
     if not num_of_guesses or not won: 
         return abort(404)
 
+    leaderboard_data={
+        "game_id" : game_id,
+        "num_of_guesses": num_of_guesses[0],
+        "username": username,
+        "win": won[0]
+    }
+
     # Game already won or lost
-    if num_of_guesses[0] >= 6 or won[0]:   
+    if num_of_guesses[0] >= 6 or won[0]:
         return {"numberOfGuesses": num_of_guesses[0], "win": won[0]}
 
     # Check if user already guess the word before
@@ -284,6 +317,10 @@ async def post_user_guessword(data):
 
             if guess_word == correct_word:
                 await set_win_user(id=game_id, username=username, db=db)
+                # Add to redis queue
+                leaderboard_data["num_of_guesses"] += 1
+                leaderboard_data["win"] = True
+                q.enqueue(add_to_leaderboard, leaderboard_data, retry=Retry(max=3, interval=5))
                 letter_map = {
                     'correctPosition' : list(range(6)),
                     'correctLetterWrongPos': [],
@@ -293,6 +330,12 @@ async def post_user_guessword(data):
                 isCorrectWord=True
 
             else:
+                if num_of_guesses[0] == 5:
+                    leaderboard_data["num_of_guesses"] += 1
+                    leaderboard_data["win"] = False
+                    # Add to redis queue
+                    q.enqueue(add_to_leaderboard, leaderboard_data, retry=Retry(max=3, interval=5))
+
                 letter_map = check_pos_valid_letter(
                     guess_word=guess_word, 
                     correct_word=correct_word

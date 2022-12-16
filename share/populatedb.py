@@ -23,6 +23,8 @@ correct_f.close()
 connection = sqlite3.connect(f'./var/primary/mount/wordle.db')
 cursor = connection.cursor()
 
+callback_url = "https://webhook.site/68f8898e-78c7-46a6-9bfb-0ab6bcad684c"
+
 # Create table
 cursor.execute("DROP TABLE IF EXISTS valid")
 cursor.execute("""
@@ -38,6 +40,14 @@ CREATE TABLE correct(
 );
 """)
 
+cursor.execute("DROP TABLE IF EXISTS webhook")
+cursor.execute("""
+CREATE TABLE webhook(
+    url VARCHAR primary key
+);
+""")
+
+# cursor.execute("INSERT INTO webhook (url) VALUES (?)", (callback_url,))
 
 # Loop Json files and insert
 for i in range(0, len(VALID_DATA)):
@@ -45,6 +55,8 @@ for i in range(0, len(VALID_DATA)):
 
 for i in range(0, len(CORRECT_DATA)):
     cursor.execute("INSERT INTO correct (word) VALUES(?)", (CORRECT_DATA[i],))
+
+
 
 print('Database is populated with correct and valid words')
 connection.commit()
