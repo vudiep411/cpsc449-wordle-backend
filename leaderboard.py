@@ -18,29 +18,21 @@ class GameData:
     win: bool
 
 # Register with Game service
-# connection = False
-# while not connection:
+
+# error = True
+# while error:
 #     try:
+#         time.sleep(1)
 #         url = "https://webhook.site/68f8898e-78c7-46a6-9bfb-0ab6bcad684c"
-#         res = httpx.post('http://localhost:5100/webhook', data={"url": url})
-#         connection = True
+#         r = httpx.post('http://localhost:5100/webhook', data={"url": url})
+#         if r.status_code != 200:
+#             error = True
+#         else: 
+#             error = False
 #     except httpx.HTTPError as exc:
 #         print(f"HTTP Exception for {exc.request.url} - {exc}")
-#         time.sleep(1)
 #         print("Retrying...")
-#         continue
-# while True:
-#     while True:
-#         try:
-#             url = "https://webhook.site/68f8898e-78c7-46a6-9bfb-0ab6bcad684c"
-#             res = httpx.post('http://localhost:5100/webhook', data={"url": url})
-#         except httpx.HTTPError as exc:
-#             print(f"HTTP Exception for {exc.request.url} - {exc}")
-#             print("Retrying...")
-#             pass
-#         else:
-#             break
-#     time.sleep(2)
+#         error = True
 
 
 # Handle bad routes/errors
