@@ -131,7 +131,4 @@ async def get_user():
     print(top_players)
     return top_players
 
-def post_url(data):
-    httpx.post("http://tuffix-vm/register", data = {"input": data})
 
-post_url("http://localhost:5400/")

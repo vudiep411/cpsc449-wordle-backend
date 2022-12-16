@@ -313,12 +313,6 @@ async def post_user_guessword(data):
     }
     return responseData, 201    # Return Response
 
-@app.route("/register", methods=["POST"])
-async def register():
-    data = request.data
-    db = await _get_db(next(iterator))
-    # insert query here
-    return {"message": "saved database"}, 200
 
 
 
