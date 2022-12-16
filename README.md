@@ -17,25 +17,29 @@ cd cpsc449-wordle-backend/
 ```sh
 ./bin/requirements.sh
 ```
-<p>4. Setting up the database</p>
 
-```sh
-./bin/init.sh
-```
+<p>4. In var directory create primary/data and primary/mount, secondary1/data and secondary1/mount, secondary2/data and secondary2/mount </p>
+
 <p>5. Start the server with foreman</p>
 
 ```sh
 foreman start
 ```
 
-<p>6. Start redis server</p>
+> ⚠ leaderboard service will try to connect but won't be able to until database is initilized in the next step
+
+<p>6. Setting up the database</p>
+
+```sh
+./bin/init.sh
+```
+
+<p>7. Start redis server if haven't</p>
 
 ```sh
 ./redis.sh
 ```
 <br/>
-
-7. In var directory create primary/data and primary/mount, secondary1/data and secondary1/mount, secondary2/data and secondary2/mount <br/>
 
 8. Configure your Nginx similar to [nginx.confg](nginx.confg)
 
