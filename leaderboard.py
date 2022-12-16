@@ -128,8 +128,12 @@ async def add_game(data):
         no_of_games = no_of_games.decode("utf-8")
     else:
         no_of_games = 1
-    
-    avg = (int(current_score) + int(game_score)) // int(no_of_games)
+
+    print(game_score)
+    print(current_score)
+    print(no_of_games)
+
+    avg = ((int(current_score) + int(game_score))) / int(no_of_games)
     r.hset(username, "score", avg)
 
     print(avg)
@@ -151,9 +155,10 @@ async def get_user():
     arr = r.zrevrange("players", 0, -1, withscores=True)
     top_players = {}
     i = 0
+    print(arr)
     while i < len(arr) and i < 10:
         player = arr[i]
-        top_players[i+1] = player[0].decode("utf-8")
+        top_players[i+1] = player[0].decode("utf-8") + " - " + str(player[1])
         i += 1
         
     print(top_players)

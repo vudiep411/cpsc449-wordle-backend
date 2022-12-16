@@ -319,6 +319,7 @@ async def post_user_guessword(data):
                 await set_win_user(id=game_id, username=username, db=db)
                 # Add to redis queue
                 leaderboard_data["num_of_guesses"] += 1
+                leaderboard_data["win"] = True
                 q.enqueue(add_to_leaderboard, leaderboard_data, retry=Retry(max=3, interval=5))
                 letter_map = {
                     'correctPosition' : list(range(6)),
