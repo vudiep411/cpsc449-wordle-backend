@@ -13,5 +13,7 @@ secondary2: ./bin/litefs -config ./etc/secondary2.yml
 leaderboard: hypercorn leaderboard --reload --debug --bind books.local.gd:$PORT --access-logfile - --error-logfile - --log-level DEBUG
 
 
+# rq worker --with-scheduler
+
 
 

@@ -24,19 +24,24 @@ def register_callback():
     error = True
     while error:
         try:
+            time.sleep(2)            
             url = "https://webhook.site/68f8898e-78c7-46a6-9bfb-0ab6bcad684c"
             data = {"url": url}
             r = requests.post(url='http://localhost:5100/game/webhook', json=data)
             print(r.status_code)
+
             if r.status_code == 200 or r.status_code == 409:
                 error = False
+
             else:
+                time.sleep(2) 
                 print("retrying...")
                 error = True
         except requests.exceptions.HTTPError:
-            time.sleep(5)
+            time.sleep(2)
             print("retrying...")
             error = True
+
 
 
 # Handle bad routes/errors
@@ -79,12 +84,6 @@ def get_score(guesses, win):
     else:
         return 0
 
-#Webhook
-@app.route('/webhook', methods=['POST'])
-async def webhook():
-    push = await request.get_json()
-    app.logger.debug(json.dumps(push, indent=2))
-    return "", 204
 
 # Leaderboard
 @app.route("/leaderboard/", methods=["GET"])

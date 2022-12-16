@@ -6,6 +6,8 @@
 #   File name: queries.py
 #   Purpose: functions needed for wordle.py
 
+import requests
+
 
 # Check the valid guessed word letter and valid postion
 # guess_word -> str, user's guess_word
@@ -43,3 +45,11 @@ def check_pos_valid_letter(guess_word, correct_word):
         'correctLetterWrongPos': correct_letter_wrong_pos,
         'wrongLetter' : wrong_letter
     }
+
+def add_to_leaderboard(data):
+    try:
+        print("enqueue")
+        r = requests.post(url='http://localhost:5700/leaderboard/add', json=data)
+        print(r.status_code)
+    except requests.exceptions.HTTPError:
+        print('error')
