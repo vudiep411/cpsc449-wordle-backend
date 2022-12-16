@@ -52,7 +52,7 @@ foreman start
 http://127.0.0.1:5100/  <br/>
 http://127.0.0.1:5200/  <br/>
 http://127.0.0.1:5300/  <br/>
-> ⚠ Leaderboard service will be started at http://127.0.0.1:5400/ <br/>
+> ⚠ Leaderboard service will be started at http://127.0.0.1:5700/ <br/>
 
 To access leaderboard data through nginx, visit http://tuffix-vm/leaders
 
