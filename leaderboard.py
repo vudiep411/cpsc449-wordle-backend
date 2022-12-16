@@ -4,6 +4,7 @@ import redis
 from quart import Quart, g, abort, request
 from quart_schema import QuartSchema, RequestSchemaValidationError, validate_request
 
+import httpx
 
 app = Quart(__name__)
 QuartSchema(app)
@@ -129,3 +130,8 @@ async def get_user():
         
     print(top_players)
     return top_players
+
+def post_url(data):
+    httpx.post("http://tuffix-vm/register", data = {"input": data})
+
+post_url("http://localhost:5400/")
