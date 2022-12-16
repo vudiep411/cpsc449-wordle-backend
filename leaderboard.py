@@ -3,7 +3,9 @@ import textwrap
 import redis
 from quart import Quart, g, abort, request
 from quart_schema import QuartSchema, RequestSchemaValidationError, validate_request
-
+import json
+import httpx
+import time
 
 app = Quart(__name__)
 QuartSchema(app)
@@ -14,6 +16,29 @@ class GameData:
     username: str
     num_of_guesses: int
     win: bool
+
+# Register with Game service
+# connection = False
+# while not connection:
+#     try:
+#         url = "https://webhook.site/68f8898e-78c7-46a6-9bfb-0ab6bcad684c"
+#         res = httpx.post('http://localhost:5100/webhook', data={"url": url})
+#         connection = True
+#     except httpx.HTTPError as exc:
+#         print(f"HTTP Exception for {exc.request.url} - {exc}")
+#         time.sleep(1)
+#         print("Retrying...")
+#         continue
+
+# try:
+#     url = "https://webhook.site/68f8898e-78c7-46a6-9bfb-0ab6bcad684c"
+#     res = httpx.post('http://localhost:5100/webhook', data={"url": url})
+#     print(res)
+#     connection = True
+# except httpx.HTTPError as exc:
+#     print(f"HTTP Exception for {exc.request.url} - {exc}")
+#     time.sleep(1)
+#     print("Retrying...")
 
 
 # Handle bad routes/errors
@@ -55,6 +80,13 @@ def get_score(guesses, win):
         return 1
     else:
         return 0
+
+#Webhook
+@app.route('/webhook', methods=['POST'])
+async def webhook():
+    push = await request.get_json()
+    app.logger.debug(json.dumps(push, indent=2))
+    return "", 204
 
 # Leaderboard
 @app.route("/leaderboard/", methods=["GET"])

@@ -35,7 +35,9 @@ foreman start
 ```
 <br/>
 
-7. Configure your Nginx similar to [nginx.confg](nginx.confg)
+7. In var directory create primary/data and primary/mount, secondary1/data and secondary1/mount, secondary2/data and secondary2/mount <br/>
+
+8. Configure your Nginx similar to [nginx.confg](nginx.confg)
 
 <br/>
 <br/>

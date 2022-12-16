@@ -8,11 +8,12 @@ import sqlite3
 import textwrap
 import databases
 import toml
-from quart import Quart, g, abort
+from quart import Quart, g, abort, request
 from quart_schema import QuartSchema, RequestSchemaValidationError, validate_request
 from utils.queries import *
 from utils.functions import check_pos_valid_letter
 import uuid
+import json
 
 app = Quart(__name__)
 QuartSchema(app)
@@ -44,18 +45,22 @@ class Game:
 class Username:
     username: str
 
+@dataclasses.dataclass
+class Webhooks:
+    url: str
+
 iterator = cycle([0, 1, 2])
 
 # DATABASE CONNECTION
 async def _connect_db(num):
     if num == 1:
-        return databases.Database(app.config["DATABASES"]["URL1"])
-        # await rep1.connect()
-        # return rep1
+        database = databases.Database(app.config["DATABASES"]["URL1"])
+        await database.connect()
+        return database
     elif num == 2:
-        return databases.Database(app.config["DATABASES"]["URL2"])
-        # await rep2.connect()
-        # return rep2
+        database = databases.Database(app.config["DATABASES"]["URL2"])
+        await database.connect()
+        return database
     else:
         database = databases.Database(app.config["DATABASES"]["URL"])
         await database.connect()
@@ -120,6 +125,21 @@ async def get_game(id):
     else:
         abort(404)
 
+# ********************************************************************************* 
+
+@app.route("/webhook", methods=["POST"])
+@validate_request(Webhooks)
+async def register_webhook(data):
+    db = await _get_db(0)
+    input_data = dataclasses.asdict(data)
+    callback_url = input_data["url"]
+    try:
+        await db.execute("INSERT INTO webhook (url) VALUES (:url)", values={"url": callback_url})
+
+    except sqlite3.IntegrityError as e:
+        abort(409, e)
+
+    return {"url" : callback_url}, 200 
 
 
 # Get all games from users
