@@ -1,5 +1,5 @@
 # CPSC 449 Group 21 Project 3
-<p><b>Group Member:</b> Vu Diep, Shridhar Bhardwaj, Anvit Rajesh Patil</p>
+<p><b>Group Member:</b> Vu Diep, Shridhar Bhardwaj, Shreya Bhattacharya, Aaditya Chaudhari</p>
 
 ## Installations
 <p>1. Clone the repository</p>
