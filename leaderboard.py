@@ -29,16 +29,18 @@ class GameData:
 #         time.sleep(1)
 #         print("Retrying...")
 #         continue
-
-# try:
-#     url = "https://webhook.site/68f8898e-78c7-46a6-9bfb-0ab6bcad684c"
-#     res = httpx.post('http://localhost:5100/webhook', data={"url": url})
-#     print(res)
-#     connection = True
-# except httpx.HTTPError as exc:
-#     print(f"HTTP Exception for {exc.request.url} - {exc}")
-#     time.sleep(1)
-#     print("Retrying...")
+# while True:
+#     while True:
+#         try:
+#             url = "https://webhook.site/68f8898e-78c7-46a6-9bfb-0ab6bcad684c"
+#             res = httpx.post('http://localhost:5100/webhook', data={"url": url})
+#         except httpx.HTTPError as exc:
+#             print(f"HTTP Exception for {exc.request.url} - {exc}")
+#             print("Retrying...")
+#             pass
+#         else:
+#             break
+#     time.sleep(2)
 
 
 # Handle bad routes/errors
