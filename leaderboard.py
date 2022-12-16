@@ -3,9 +3,9 @@ import textwrap
 import redis
 from quart import Quart, g, abort, request
 from quart_schema import QuartSchema, RequestSchemaValidationError, validate_request
-import json
-import httpx
 import time
+import requests
+import json
 
 app = Quart(__name__)
 QuartSchema(app)
@@ -19,20 +19,24 @@ class GameData:
 
 # Register with Game service
 
-# error = True
-# while error:
-#     try:
-#         time.sleep(1)
-#         url = "https://webhook.site/68f8898e-78c7-46a6-9bfb-0ab6bcad684c"
-#         r = httpx.post('http://localhost:5100/webhook', data={"url": url})
-#         if r.status_code != 200:
-#             error = True
-#         else: 
-#             error = False
-#     except httpx.HTTPError as exc:
-#         print(f"HTTP Exception for {exc.request.url} - {exc}")
-#         print("Retrying...")
-#         error = True
+@app.before_serving
+def register_callback():
+    error = True
+    while error:
+        try:
+            url = "https://webhook.site/68f8898e-78c7-46a6-9bfb-0ab6bcad684c"
+            data = {"url": url}
+            r = requests.post(url='http://localhost:5100/game/webhook', json=data)
+            print(r.status_code)
+            if r.status_code == 200 or r.status_code == 409:
+                error = False
+            else:
+                print("retrying...")
+                error = True
+        except requests.exceptions.HTTPError:
+            time.sleep(5)
+            print("retrying...")
+            error = True
 
 
 # Handle bad routes/errors

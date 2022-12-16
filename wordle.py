@@ -13,7 +13,7 @@ from quart_schema import QuartSchema, RequestSchemaValidationError, validate_req
 from utils.queries import *
 from utils.functions import check_pos_valid_letter
 import uuid
-import json
+
 
 app = Quart(__name__)
 QuartSchema(app)
@@ -127,11 +127,12 @@ async def get_game(id):
 
 # ********************************************************************************* 
 
-@app.route("/webhook", methods=["POST"])
+@app.route("/game/webhook", methods=["POST"])
 @validate_request(Webhooks)
 async def register_webhook(data):
     db = await _get_db(0)
     input_data = dataclasses.asdict(data)
+    print("here")
     callback_url = input_data["url"]
     try:
         await db.execute("INSERT INTO webhook (url) VALUES (:url)", values={"url": callback_url})
