@@ -1,1 +1,1 @@
-*/10 * * * * ./bin/requeue.sh
+*/10 * * * * run-one rq requeue --all --queue default
