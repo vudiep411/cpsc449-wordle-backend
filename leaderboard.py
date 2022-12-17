@@ -6,6 +6,7 @@ from quart_schema import QuartSchema, RequestSchemaValidationError, validate_req
 import time
 import requests
 import json
+import socket
 
 app = Quart(__name__)
 QuartSchema(app)
@@ -24,8 +25,9 @@ def register_callback():
     error = True
     while error:
         try:
+            hostname = socket.getfqdn()
             time.sleep(2)            
-            url = "https://webhook.site/68f8898e-78c7-46a6-9bfb-0ab6bcad684c"
+            url = f"http://{hostname}/leaderboard/add"
             data = {"url": url}
             r = requests.post(url='http://localhost:5100/game/webhook', json=data)
             print(r.status_code)

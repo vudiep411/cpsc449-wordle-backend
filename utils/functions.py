@@ -3,7 +3,7 @@
 #   email: vdiep8@csu.fullerton.edu
 #
 #   This file
-#   File name: queries.py
+#   File name: functions.py
 #   Purpose: functions needed for wordle.py
 
 import requests

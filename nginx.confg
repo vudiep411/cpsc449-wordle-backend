@@ -13,7 +13,7 @@ server {
       	location / {
 		auth_request /auth;
 		proxy_pass http://backend;
-      	}
+      	} 
 
 	location = /auth {
 		proxy_pass http://127.0.0.1:5000/user/login;
@@ -24,6 +24,11 @@ server {
 	}
 
 	location /leaders {
-		proxy_pass http://127.0.0.1:5700/leaderboard/players
+		proxy_pass http://127.0.0.1:5700/leaderboard/players;
+	}
+
+	location = /webhook {
+		auth_basic		off;
+		proxy_pass		http://backend/game/webhook;	
 	}
 }
