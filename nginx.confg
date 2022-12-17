@@ -29,6 +29,6 @@ server {
 
 	location = /webhook {
 		auth_basic		off;
-		proxy_pass		http://backend/game/webhook;	
+		proxy_pass		http://backend/leaderboard/add;	
 	}
 }

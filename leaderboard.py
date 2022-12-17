@@ -5,7 +5,6 @@ from quart import Quart, g, abort, request
 from quart_schema import QuartSchema, RequestSchemaValidationError, validate_request
 import time
 import requests
-import json
 import socket
 
 app = Quart(__name__)
@@ -70,21 +69,21 @@ def get_redis_db():
 
 def get_score(guesses, win):
     if not win:
-        return 0
+        return 0.0
     elif guesses == 1:
-        return 6
+        return 6.0
     elif guesses == 2:
-        return 5
+        return 5.0
     elif guesses == 3:
-        return 4
+        return 4.0
     elif guesses == 4:
-        return 3
+        return 3.0
     elif guesses == 5:
-        return 2
+        return 2.0
     elif guesses == 6:
-        return 1
+        return 1.0
     else:
-        return 0
+        return 0.0
 
 
 # Leaderboard
@@ -128,6 +127,10 @@ async def add_game(data):
 
     if no_of_games is not None:
         no_of_games = no_of_games.decode("utf-8")
+        if float(no_of_games) > 1:
+            no_of_games = 2
+        else:
+            no_of_games = 1
     else:
         no_of_games = 1
 
@@ -135,7 +138,7 @@ async def add_game(data):
     print(current_score)
     print(no_of_games)
 
-    avg = ((int(current_score) + int(game_score))) / int(no_of_games)
+    avg = ((float(current_score) + float(game_score))) / float(no_of_games)
     r.hset(username, "score", avg)
 
     print(avg)

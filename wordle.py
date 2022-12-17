@@ -16,7 +16,7 @@ import uuid
 from redis import Redis
 from rq import Queue
 from rq import Retry, Queue
-
+from rq.registry import FailedJobRegistry
 
 app = Quart(__name__)
 QuartSchema(app)
@@ -55,6 +55,7 @@ class Webhooks:
 # Global Variables
 iterator = cycle([0, 1, 2])
 q = Queue(connection=Redis())
+registry = FailedJobRegistry(queue=q)
 
 # DATABASE CONNECTION
 async def _connect_db(num):
@@ -216,7 +217,7 @@ async def get_all_games_in_progress_user(username):
 @app.route("/game/<string:username>/<string:game_id>")
 async def get_user_game_in_progress(username, game_id):
     """Get a game in progress"""
-
+    
     num = next(iterator)
     db = await _get_db(num)
 
