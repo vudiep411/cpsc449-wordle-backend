@@ -42,6 +42,13 @@ foreman start
 <br/>
 
 8. Configure your Nginx similar to [nginx.confg](nginx.confg)
+9. Configure your crontab similar to cron.txt
+
+Steps:
+1. Start cron using command: crontab -e
+2. Configure the content similar to cron.txt
+3. Save the changes
+    
 
 <br/>
 <br/>
