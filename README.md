@@ -42,7 +42,7 @@ foreman start
 <br/>
 
 8. Configure your Nginx similar to [nginx.confg](nginx.confg)
-9. Configure your crontab similar to cron.txt
+9. Configure your crontab similar to [cron.txt](cron.txt)
 
 Steps:
 1. Start cron using command: crontab -e
@@ -65,4 +65,4 @@ To access leaderboard data through nginx, visit http://tuffix-vm/leaders
 
 ## Documentation
 
-<p>After starting the server with foreman start, go to http://127.0.0.1:5000/docs, http://127.0.0.1:5100/docs, and http://127.0.0.1:5400/docs for all REST API routes example</p>
+<p>After starting the server with foreman start, go to http://127.0.0.1:5000/docs, http://127.0.0.1:5100/docs, and http://127.0.0.1:5700/docs for all REST API routes example</p>
