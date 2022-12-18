@@ -1,4 +1,4 @@
-# CPSC 449 Group 21 Project 4
+# CPSC 449 Group 22 Project 4
 <p><b>Group Member:</b> Vu Diep, Shridhar Bhardwaj, Shreya Bhattacharya, Aaditya Chaudhari</p>
 
 ## Installations
